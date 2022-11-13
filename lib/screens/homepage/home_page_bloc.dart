@@ -21,7 +21,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   void _onHomePageLoaded(HomePageLoaded event, Emitter<HomePageState> emit) async{
     emit(HomePageLoadInProgress());
 
-    await Future.delayed(const Duration(seconds: 2));
     ResultObject<List<Project>> loadingProjects = await _db.projectsDao.findAllProjects();
 
     if (loadingProjects.isFailure) {
