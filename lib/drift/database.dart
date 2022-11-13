@@ -6,6 +6,7 @@ import 'package:drift/native.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:portfolio_manager/drift/projects_dao.dart';
 
 part 'database.g.dart';
 
@@ -24,8 +25,15 @@ LazyDatabase _openConnection() {
   });
 }
 
+@DataClassName('ProjectDTO')
+class Projects extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().customConstraint("UNIQUE NOT NULL")();
+  TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
+}
+
 @Singleton()
-@DriftDatabase(tables: [], daos: [])
+@DriftDatabase(tables: [Projects], daos: [ProjectsDao])
 class Database extends _$Database {
   Database() : super(_openConnection());
 
@@ -35,7 +43,7 @@ class Database extends _$Database {
   @override
   MigrationStrategy get migration => MigrationStrategy(
       onCreate: (Migrator m) async{
-        //await m.createAll();
+        await m.createAll();
         //await m.createIndex(Index(records.actualTableName, 'CREATE INDEX records_date ON records(date)'));
       },
       beforeOpen: (details) async {

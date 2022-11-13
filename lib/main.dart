@@ -16,7 +16,7 @@ void main() async{
         ),
       ),
       routerDelegate: _appRouter.delegate(),
-      routeInformationParser: _appRouter.defaultRouteParser(),
+      routeInformationParser: _appRouter.defaultRouteParser()
     ),
   );
 }
