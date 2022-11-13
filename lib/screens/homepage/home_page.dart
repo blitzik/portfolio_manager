@@ -5,6 +5,7 @@ import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/homepage/home_page_bloc.dart';
+import 'package:portfolio_manager/screens/homepage/project_item.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 
 class HomePage extends StatefulWidget implements AutoRouteWrapper {
@@ -69,11 +70,20 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            return ListView.builder(
-            itemCount: projects.length,
-              itemBuilder: (context, index) {
-                return Text(projects[index].name);
-              }
+            return Column(
+              children: [
+                Text("Total cost basis"),
+                Text("P/L"),
+                Text("maybe a pie chart or something here"),
+                Expanded(
+                  child: ListView.builder(
+                  itemCount: projects.length,
+                    itemBuilder: (context, index) {
+                      return ProjectItem(projects[index]);
+                    }
+                  ),
+                ),
+              ],
             );
           },
         )
