@@ -16,7 +16,18 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   HomePageBloc(this._db) : super(HomePageLoadInProgress()) {
     on<HomePageLoaded>(_onHomePageLoaded);
+    on<HomePageProjectCreated>(_onHomePageProjectCreated);
   }
+
+
+  void _onHomePageProjectCreated(HomePageProjectCreated event, Emitter<HomePageState> emit) async{
+    if (state is! HomePageLoadSuccess) return;
+
+    List<Project> projects = (state as HomePageLoadSuccess).projects.toList();
+
+    emit(HomePageLoadSuccess(projects..add(event.project)..toList(growable: false)));
+  }
+
 
   void _onHomePageLoaded(HomePageLoaded event, Emitter<HomePageState> emit) async{
     emit(HomePageLoadInProgress());
@@ -28,6 +39,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       return;
     }
 
-    emit(HomePageLoadSuccess(loadingProjects.value!));
+    emit(HomePageLoadSuccess(loadingProjects.value!.toList(growable: false)));
   }
 }

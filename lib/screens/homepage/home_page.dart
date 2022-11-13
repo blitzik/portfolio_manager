@@ -91,7 +91,8 @@ class _HomePageState extends State<HomePage> {
                   ProjectRoute(
                     project: null,
                     onSuccessfullySaved: (Project project) {
-                      // todo
+                      HomePageBloc bloc = BlocProvider.of<HomePageBloc>(context);
+                      bloc.add(HomePageProjectCreated(project));
                     }
                   )
                 );
