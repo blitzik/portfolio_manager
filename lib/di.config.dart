@@ -10,8 +10,9 @@ import 'package:injectable/injectable.dart' as _i2;
 
 import 'drift/database.dart' as _i3;
 import 'screens/homepage/home_page_bloc.dart' as _i4;
-import 'screens/project/project_bloc.dart'
-    as _i5; // ignore_for_file: unnecessary_lambdas
+import 'screens/project/project_bloc.dart' as _i5;
+import 'screens/project_detail/project_detail_bloc.dart'
+    as _i6; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -28,5 +29,7 @@ _i1.GetIt $initGetIt(
   gh.singleton<_i3.Database>(_i3.Database());
   gh.factory<_i4.HomePageBloc>(() => _i4.HomePageBloc(get<_i3.Database>()));
   gh.factory<_i5.ProjectBloc>(() => _i5.ProjectBloc(get<_i3.Database>()));
+  gh.lazySingleton<_i6.ProjectDetailBlocFactory>(
+      () => _i6.ProjectDetailBlocFactory(get<_i3.Database>()));
   return get;
 }

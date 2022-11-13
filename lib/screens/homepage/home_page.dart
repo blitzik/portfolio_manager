@@ -79,7 +79,13 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.separated(
                     itemCount: projects.length,
                     itemBuilder: (context, index) {
-                      return ProjectItem(projects[index]);
+                      final Project project = projects[index];
+                      return InkWell(
+                        child: ProjectItem(project),
+                        onTap: () {
+                          AutoRouter.of(context).push(ProjectDetailRoute(project: project));
+                        },
+                      );
                     },
                     separatorBuilder: (context, index) {
                       return const Divider(height: 3, color: Colors.black45,);
