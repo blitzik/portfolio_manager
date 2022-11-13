@@ -8,11 +8,9 @@ class ProjectItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(project.name),
-        subtitle: Text("4.7900215"),
-      ),
+    return ListTile(
+      title: Text(project.name),
+      subtitle: Text("${project.amount}"),
     );
   }
 }

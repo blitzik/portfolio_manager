@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:portfolio_manager/domain/project.dart';
@@ -14,7 +15,8 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
     ResultObject<Project> result = ResultObject();
     ProjectsCompanion p = ProjectsCompanion(
       name: Value<String>(project.name),
-      coin: Value<String>(project.coin)
+      coin: Value<String>(project.coin),
+      amount: Value<Decimal>(project.amount)
     );
 
     try {
@@ -27,7 +29,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         dto = await (select(projects)..where((tbl) => tbl.id.equals(project.id!))).getSingle();
       }
 
-      result = ResultObject(Project(dto.name, dto.coin, id: dto.id));
+      result = ResultObject(Project(name: dto.name, coin: dto.coin, amount: dto.amount, id: dto.id));
 
     } on SqliteException catch(e) {
       if (e.extendedResultCode == 2067) { // UNIQUE CONSTRAINT ERROR CODE
@@ -47,8 +49,9 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
       final q = await select(projects).get();
       result = ResultObject(q.map((row) {
         return Project(
-          row.name,
-          row.coin,
+          name: row.name,
+          coin: row.coin,
+          amount: row.amount,
           id: row.id
         );
       }).toList());

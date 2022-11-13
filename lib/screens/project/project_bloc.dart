@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:decimal/decimal.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:portfolio_manager/domain/project.dart';
@@ -24,7 +25,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   void _onProjectSaveClicked(ProjectSaveClicked event, Emitter<ProjectState> emit) async{
     emit(ProjectSaveInProgress());
 
-    Project project = event.project ?? Project(event.name, event.coin);
+    Project project = event.project ?? Project(name: event.name, coin: event.coin, amount: Decimal.zero);
 
     ResultObject<Project> savingProject = await _db.projectsDao.save(project);
     if (savingProject.isFailure) {

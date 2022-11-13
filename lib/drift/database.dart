@@ -6,9 +6,12 @@ import 'package:drift/native.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:portfolio_manager/drift/decimal_converter.dart';
 import 'package:portfolio_manager/drift/projects_dao.dart';
 
 part 'database.g.dart';
+
+DecimalConverter decimalConverter = const DecimalConverter();
 
 d(String s) {
   return Decimal.parse(s);
@@ -30,6 +33,7 @@ class Projects extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().customConstraint("UNIQUE NOT NULL")();
   TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
+  TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
 }
 
 @Singleton()

@@ -1,17 +1,27 @@
+import 'package:decimal/decimal.dart';
+
 class Project {
   final int? id;
   final String name;
   final String coin;
+  final Decimal amount;
 
-  Project(this.name, this.coin, {this.id});
+  Project({
+    required this.name,
+    required this.coin,
+    required this.amount,
+    this.id,
+  });
 
   Project copyWith({
     String? name,
-    String? coin
+    String? coin,
+    Decimal? amount
   }) {
     return Project(
-      name ?? this.name,
-      coin ?? this.coin,
+      name: name ?? this.name,
+      coin: coin ?? this.coin,
+      amount: amount ?? this.amount,
       id: id
     );
   }

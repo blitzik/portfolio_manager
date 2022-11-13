@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: () {
-
+                        BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
                       },
                       child: const Text("Try again")
                     )
@@ -76,11 +76,14 @@ class _HomePageState extends State<HomePage> {
                 Text("P/L"),
                 Text("maybe a pie chart or something here"),
                 Expanded(
-                  child: ListView.builder(
-                  itemCount: projects.length,
+                  child: ListView.separated(
+                    itemCount: projects.length,
                     itemBuilder: (context, index) {
                       return ProjectItem(projects[index]);
-                    }
+                    },
+                    separatorBuilder: (context, index) {
+                      return const Divider(height: 3, color: Colors.black45,);
+                    },
                   ),
                 ),
               ],
