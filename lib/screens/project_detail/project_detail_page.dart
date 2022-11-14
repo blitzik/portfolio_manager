@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
+import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 
@@ -34,6 +35,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
         child: Center(
           child: Text("hello project detail :-)"),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          AutoRouter.of(context).push(TransactionRoute(project: widget.project));
+        },
       ),
     );
   }

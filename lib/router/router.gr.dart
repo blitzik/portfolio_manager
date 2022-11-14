@@ -11,25 +11,26 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i4;
-import 'package:flutter/material.dart' as _i5;
+import 'package:auto_route/auto_route.dart' as _i5;
+import 'package:flutter/material.dart' as _i6;
 
-import '../domain/project.dart' as _i6;
+import '../domain/project.dart' as _i7;
 import '../screens/homepage/home_page.dart' as _i1;
 import '../screens/project/project_page.dart' as _i2;
 import '../screens/project_detail/project_detail_page.dart' as _i3;
+import '../screens/transaction/transaction_page.dart' as _i4;
 
-class Router extends _i4.RootStackRouter {
-  Router([_i5.GlobalKey<_i5.NavigatorState>? navigatorKey])
+class Router extends _i5.RootStackRouter {
+  Router([_i6.GlobalKey<_i6.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i4.PageFactory> pagesMap = {
+  final Map<String, _i5.PageFactory> pagesMap = {
     HomeRoute.name: (routeData) {
-      return _i4.CustomPage<dynamic>(
+      return _i5.CustomPage<dynamic>(
         routeData: routeData,
-        child: _i4.WrappedRoute(child: const _i1.HomePage()),
-        transitionsBuilder: _i4.TransitionsBuilders.slideLeft,
+        child: _i5.WrappedRoute(child: const _i1.HomePage()),
+        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 125,
         opaque: true,
         barrierDismissible: false,
@@ -37,15 +38,15 @@ class Router extends _i4.RootStackRouter {
     },
     ProjectRoute.name: (routeData) {
       final args = routeData.argsAs<ProjectRouteArgs>();
-      return _i4.CustomPage<dynamic>(
+      return _i5.CustomPage<dynamic>(
         routeData: routeData,
-        child: _i4.WrappedRoute(
+        child: _i5.WrappedRoute(
             child: _i2.ProjectPage(
           project: args.project,
           key: args.key,
           onSuccessfullySaved: args.onSuccessfullySaved,
         )),
-        transitionsBuilder: _i4.TransitionsBuilders.slideLeft,
+        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 125,
         opaque: true,
         barrierDismissible: false,
@@ -53,14 +54,29 @@ class Router extends _i4.RootStackRouter {
     },
     ProjectDetailRoute.name: (routeData) {
       final args = routeData.argsAs<ProjectDetailRouteArgs>();
-      return _i4.CustomPage<dynamic>(
+      return _i5.CustomPage<dynamic>(
         routeData: routeData,
-        child: _i4.WrappedRoute(
+        child: _i5.WrappedRoute(
             child: _i3.ProjectDetailPage(
           args.project,
           key: args.key,
         )),
-        transitionsBuilder: _i4.TransitionsBuilders.slideLeft,
+        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
+        durationInMilliseconds: 125,
+        opaque: true,
+        barrierDismissible: false,
+      );
+    },
+    TransactionRoute.name: (routeData) {
+      final args = routeData.argsAs<TransactionRouteArgs>();
+      return _i5.CustomPage<dynamic>(
+        routeData: routeData,
+        child: _i5.WrappedRoute(
+            child: _i4.TransactionPage(
+          args.project,
+          key: args.key,
+        )),
+        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 125,
         opaque: true,
         barrierDismissible: false,
@@ -69,25 +85,29 @@ class Router extends _i4.RootStackRouter {
   };
 
   @override
-  List<_i4.RouteConfig> get routes => [
-        _i4.RouteConfig(
+  List<_i5.RouteConfig> get routes => [
+        _i5.RouteConfig(
           HomeRoute.name,
           path: '/',
         ),
-        _i4.RouteConfig(
+        _i5.RouteConfig(
           ProjectRoute.name,
           path: '/project-page',
         ),
-        _i4.RouteConfig(
+        _i5.RouteConfig(
           ProjectDetailRoute.name,
           path: '/project-detail-page',
+        ),
+        _i5.RouteConfig(
+          TransactionRoute.name,
+          path: '/transaction-page',
         ),
       ];
 }
 
 /// generated route for
 /// [_i1.HomePage]
-class HomeRoute extends _i4.PageRouteInfo<void> {
+class HomeRoute extends _i5.PageRouteInfo<void> {
   const HomeRoute()
       : super(
           HomeRoute.name,
@@ -99,11 +119,11 @@ class HomeRoute extends _i4.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.ProjectPage]
-class ProjectRoute extends _i4.PageRouteInfo<ProjectRouteArgs> {
+class ProjectRoute extends _i5.PageRouteInfo<ProjectRouteArgs> {
   ProjectRoute({
-    _i6.Project? project,
-    _i5.Key? key,
-    required dynamic Function(_i6.Project) onSuccessfullySaved,
+    _i7.Project? project,
+    _i6.Key? key,
+    required dynamic Function(_i7.Project) onSuccessfullySaved,
   }) : super(
           ProjectRoute.name,
           path: '/project-page',
@@ -124,11 +144,11 @@ class ProjectRouteArgs {
     required this.onSuccessfullySaved,
   });
 
-  final _i6.Project? project;
+  final _i7.Project? project;
 
-  final _i5.Key? key;
+  final _i6.Key? key;
 
-  final dynamic Function(_i6.Project) onSuccessfullySaved;
+  final dynamic Function(_i7.Project) onSuccessfullySaved;
 
   @override
   String toString() {
@@ -138,10 +158,10 @@ class ProjectRouteArgs {
 
 /// generated route for
 /// [_i3.ProjectDetailPage]
-class ProjectDetailRoute extends _i4.PageRouteInfo<ProjectDetailRouteArgs> {
+class ProjectDetailRoute extends _i5.PageRouteInfo<ProjectDetailRouteArgs> {
   ProjectDetailRoute({
-    required _i6.Project project,
-    _i5.Key? key,
+    required _i7.Project project,
+    _i6.Key? key,
   }) : super(
           ProjectDetailRoute.name,
           path: '/project-detail-page',
@@ -160,12 +180,46 @@ class ProjectDetailRouteArgs {
     this.key,
   });
 
-  final _i6.Project project;
+  final _i7.Project project;
 
-  final _i5.Key? key;
+  final _i6.Key? key;
 
   @override
   String toString() {
     return 'ProjectDetailRouteArgs{project: $project, key: $key}';
+  }
+}
+
+/// generated route for
+/// [_i4.TransactionPage]
+class TransactionRoute extends _i5.PageRouteInfo<TransactionRouteArgs> {
+  TransactionRoute({
+    required _i7.Project project,
+    _i6.Key? key,
+  }) : super(
+          TransactionRoute.name,
+          path: '/transaction-page',
+          args: TransactionRouteArgs(
+            project: project,
+            key: key,
+          ),
+        );
+
+  static const String name = 'TransactionRoute';
+}
+
+class TransactionRouteArgs {
+  const TransactionRouteArgs({
+    required this.project,
+    this.key,
+  });
+
+  final _i7.Project project;
+
+  final _i6.Key? key;
+
+  @override
+  String toString() {
+    return 'TransactionRouteArgs{project: $project, key: $key}';
   }
 }

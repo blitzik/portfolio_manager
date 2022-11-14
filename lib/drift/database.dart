@@ -6,8 +6,10 @@ import 'package:drift/native.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/drift/decimal_converter.dart';
 import 'package:portfolio_manager/drift/projects_dao.dart';
+import 'package:portfolio_manager/drift/transactions_dao.dart';
 
 part 'database.g.dart';
 
@@ -36,8 +38,28 @@ class Projects extends Table {
   TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
 }
 
+
+@DataClassName('TransactionDTO')
+class Transactions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  IntColumn get project => integer().references(Projects, #id)();
+  IntColumn get type => intEnum<TransactionType>()();
+  TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get amountToSell => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get value => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get costs => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get fee => text().map(decimalConverter).nullable()();
+  TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get note => text().nullable()();
+}
+
+bool isInDebugMode = true;
+
 @Singleton()
-@DriftDatabase(tables: [Projects], daos: [ProjectsDao])
+@DriftDatabase(tables: [Projects, Transactions], daos: [ProjectsDao, TransactionsDao])
 class Database extends _$Database {
   Database() : super(_openConnection());
 
@@ -52,6 +74,13 @@ class Database extends _$Database {
       },
       beforeOpen: (details) async {
         await customStatement('PRAGMA foreign_keys = ON');
+        if (isInDebugMode) {
+          final m = Migrator(this);
+          for (final table in allTables) {
+            await m.deleteTable(table.actualTableName);
+            await m.createTable(table);
+          }
+        }
       },
       onUpgrade: (Migrator m, oldVersion, newVersion) async{
       }
