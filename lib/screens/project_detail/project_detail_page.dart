@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
-import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
-import 'package:portfolio_manager/widgets/default_padding.dart';
+import 'package:portfolio_manager/widgets/menu.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
@@ -28,20 +29,32 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.project.name),
-      ),
-      body: DefaultPadding(
-        child: Center(
-          child: Text("hello project detail :-)"),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          AutoRouter.of(context).push(TransactionRoute(project: widget.project));
-        },
-      ),
+      body: Column(
+        children: [
+          TitleBar(
+            title: widget.project.name,
+            isBackButtonVisible: true,
+            cubit: TitleBarCubit(),
+          ),
+          Menu(
+            children: [
+              TextButton(
+                child: const Text("Add transaction"),
+                onPressed: () {
+
+                },
+              )
+            ]
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                // TODO
+              ],
+            )
+          )
+        ],
+      )
     );
   }
 }

@@ -48,15 +48,13 @@ class Transactions extends Table {
   TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get amountToSell => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get value => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get costs => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get fee => text().map(decimalConverter).nullable()();
   TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get note => text().nullable()();
 }
 
-bool isInDebugMode = true;
+bool isInDebugMode = false;
 
 @Singleton()
 @DriftDatabase(tables: [Projects, Transactions], daos: [ProjectsDao, TransactionsDao])

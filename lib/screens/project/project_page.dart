@@ -1,13 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
+import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project/project_bloc.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 import 'package:portfolio_manager/widgets/progress_dialog.dart';
-import 'package:reactive_forms/reactive_forms.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 typedef OnSuccessfullySaved = Function(Project project);
 
@@ -31,17 +32,17 @@ class ProjectPage extends StatefulWidget implements AutoRouteWrapper{
 
 class _ProjectPageState extends State<ProjectPage> {
   late final ProjectBloc _projectBloc;
-  late final FormGroup _formGroup;
+  late final GlobalKey<FormState> _formKey;
+  late final TitleBarCubit _titleBarCubit;
+
+  _ProjectPageFormState _projectPageFormState = _ProjectPageFormState(name: "", coin: "");
 
   @override
   void initState() {
     super.initState();
+    _titleBarCubit = TitleBarCubit();
     _projectBloc = BlocProvider.of(context);
-
-    _formGroup = FormGroup({
-      'name': FormControl<String>(validators: [Validators.required]),
-      'coin': FormControl<String>(validators: [Validators.required]),
-    });
+    _formKey = GlobalKey();
   }
 
   @override
@@ -53,93 +54,138 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.project == null ? "Create project" : "Edit project"),
-      ),
-      body: DefaultPadding(
-        child: BlocConsumer<ProjectBloc, ProjectState>(
-          listener: (context, state) {
-            if (state is ProjectSaveSuccess) {
-              widget.onSuccessfullySaved(state.project);
-              Navigator.pop(context); // dismiss progress indicator
-              AutoRouter.of(context).pop();
-            }
+      body: Column(
+        children: [
+          TitleBar(
+            title: widget.project == null ? "Create project" : "Edit project",
+            cubit: _titleBarCubit
+          ),
+          Expanded(
+            child: DefaultPadding(
+              child: BlocConsumer<ProjectBloc, ProjectState>(
+                listener: (context, state) {
+                  if (state is ProjectSaveSuccess) {
+                    _titleBarCubit.activate();
+                    widget.onSuccessfullySaved(state.project);
+                    //Navigator.pop(context); // dismiss progress indicator
+                    AutoRouter.of(context).pop();
+                  }
 
-            if (state is ProjectSaveFailure) {
-              Navigator.pop(context); // dismiss progress indicator
-            }
+                  if (state is ProjectSaveFailure) {
+                    _titleBarCubit.activate();
+                    //Navigator.pop(context); // dismiss progress indicator
+                  }
 
-            if (state is ProjectSaveInProgress) {
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
+                  if (state is ProjectSaveInProgress) {
+                    _titleBarCubit.deactivate();
+                    /*showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) {
+                          return const ProgressDialog(text: "Saving data...");
+                        }
+                    );*/
+                    //return ProgressDialog(text: "Saving data...");
+                  }
+                },
+                builder: (context, state) {
+                  if (state is ProjectSaveFailure) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(state.error),
+                      ],
+                    );
+                  }
+
+                  if (state is ProjectSaveInProgress) {
                     return const ProgressDialog(text: "Saving data...");
                   }
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is ProjectSaveFailure) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(state.error),
-                ],
-              );
-            }
 
-            return ReactiveForm(
-              formGroup: _formGroup,
-              child: Column(
-                children: [
-                  ReactiveTextField(
-                    formControlName: 'name',
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: const InputDecoration(
-                      labelText: "Project name"
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: "Project name"
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter project name";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _projectPageFormState = _projectPageFormState.copyWith(name: value);
+                          },
+                        ),
+                        const SizedBox(height: 10.0),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: "Coin name"
+                          ),
+                          validator: (string) {
+                            if (string == null || string.isEmpty) {
+                              return "Please enter coin name";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _projectPageFormState = _projectPageFormState.copyWith(coin: value);
+                          },
+                        ),
+                        const SizedBox(height: 10.0),
+                        ElevatedButton(
+                          child: Text(widget.project == null ? "Create project" : "Edit project"),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              _projectBloc.add(
+                                ProjectSaveClicked(
+                                  name: _projectPageFormState.name,
+                                  coin: _projectPageFormState.coin,
+                                  project: widget.project
+                                )
+                              );
+                            }
+                          }
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 15.0,),
-                  ReactiveTextField(
-                    formControlName: 'coin',
-                    decoration: const InputDecoration(
-                      labelText: "Coin name"
-                    ),
-                  )
-                ],
-              )
-            );
-          },
-        ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: BlocBuilder<ProjectBloc, ProjectState>(
-        builder: (context, state) {
-          if (state is ProjectSaveFailure) {
-            return FloatingActionButton.extended(
-              label: const Text("Ok, I understand"),
-              onPressed: () {
-                _projectBloc.add(ProjectBackToInitialClicked());
-              },
-            );
-          }
-          return FloatingActionButton.extended(
-            label: const Text("Save"),
-            onPressed: () {
-              if (!_formGroup.valid) {
-                return;
-              }
-              _projectBloc.add(
-                ProjectSaveClicked(
-                  name: _formGroup.control('name').value,
-                  coin: _formGroup.control('coin').value,
-                  project: widget.project
-                )
-              );
-            },
-          );
-        },
-      )
     );
+  }
+}
+
+
+class _ProjectPageFormState {
+  final String name;
+  final String coin;
+
+  _ProjectPageFormState({
+    required this.name,
+    required this.coin
+  });
+
+  _ProjectPageFormState copyWith({
+    String? name,
+    String? coin
+  }) {
+    return _ProjectPageFormState(
+      name: name ?? this.name,
+      coin: coin ?? this.coin
+    );
+  }
+
+  @override
+  String toString() {
+    return "$name - $coin";
   }
 }

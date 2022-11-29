@@ -264,8 +264,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
   final Decimal amount;
   final Decimal amountToSell;
   final Decimal value;
-  final Decimal proceeds;
-  final Decimal costs;
   final Decimal realizedPnl;
   final Decimal? fee;
   final Decimal fiatFee;
@@ -278,8 +276,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
       required this.amount,
       required this.amountToSell,
       required this.value,
-      required this.proceeds,
-      required this.costs,
       required this.realizedPnl,
       this.fee,
       required this.fiatFee,
@@ -308,22 +304,14 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
     }
     {
       final converter = $TransactionsTable.$converter4;
-      map['proceeds'] = Variable<String>(converter.toSql(proceeds));
-    }
-    {
-      final converter = $TransactionsTable.$converter5;
-      map['costs'] = Variable<String>(converter.toSql(costs));
-    }
-    {
-      final converter = $TransactionsTable.$converter6;
       map['realized_pnl'] = Variable<String>(converter.toSql(realizedPnl));
     }
     if (!nullToAbsent || fee != null) {
-      final converter = $TransactionsTable.$converter7n;
+      final converter = $TransactionsTable.$converter5n;
       map['fee'] = Variable<String>(converter.toSql(fee));
     }
     {
-      final converter = $TransactionsTable.$converter8;
+      final converter = $TransactionsTable.$converter6;
       map['fiat_fee'] = Variable<String>(converter.toSql(fiatFee));
     }
     if (!nullToAbsent || note != null) {
@@ -341,8 +329,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
       amount: Value(amount),
       amountToSell: Value(amountToSell),
       value: Value(value),
-      proceeds: Value(proceeds),
-      costs: Value(costs),
       realizedPnl: Value(realizedPnl),
       fee: fee == null && nullToAbsent ? const Value.absent() : Value(fee),
       fiatFee: Value(fiatFee),
@@ -361,8 +347,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
       amount: serializer.fromJson<Decimal>(json['amount']),
       amountToSell: serializer.fromJson<Decimal>(json['amountToSell']),
       value: serializer.fromJson<Decimal>(json['value']),
-      proceeds: serializer.fromJson<Decimal>(json['proceeds']),
-      costs: serializer.fromJson<Decimal>(json['costs']),
       realizedPnl: serializer.fromJson<Decimal>(json['realizedPnl']),
       fee: serializer.fromJson<Decimal?>(json['fee']),
       fiatFee: serializer.fromJson<Decimal>(json['fiatFee']),
@@ -380,8 +364,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
       'amount': serializer.toJson<Decimal>(amount),
       'amountToSell': serializer.toJson<Decimal>(amountToSell),
       'value': serializer.toJson<Decimal>(value),
-      'proceeds': serializer.toJson<Decimal>(proceeds),
-      'costs': serializer.toJson<Decimal>(costs),
       'realizedPnl': serializer.toJson<Decimal>(realizedPnl),
       'fee': serializer.toJson<Decimal?>(fee),
       'fiatFee': serializer.toJson<Decimal>(fiatFee),
@@ -397,8 +379,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
           Decimal? amount,
           Decimal? amountToSell,
           Decimal? value,
-          Decimal? proceeds,
-          Decimal? costs,
           Decimal? realizedPnl,
           Value<Decimal?> fee = const Value.absent(),
           Decimal? fiatFee,
@@ -411,8 +391,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
         amount: amount ?? this.amount,
         amountToSell: amountToSell ?? this.amountToSell,
         value: value ?? this.value,
-        proceeds: proceeds ?? this.proceeds,
-        costs: costs ?? this.costs,
         realizedPnl: realizedPnl ?? this.realizedPnl,
         fee: fee.present ? fee.value : this.fee,
         fiatFee: fiatFee ?? this.fiatFee,
@@ -428,8 +406,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
           ..write('amount: $amount, ')
           ..write('amountToSell: $amountToSell, ')
           ..write('value: $value, ')
-          ..write('proceeds: $proceeds, ')
-          ..write('costs: $costs, ')
           ..write('realizedPnl: $realizedPnl, ')
           ..write('fee: $fee, ')
           ..write('fiatFee: $fiatFee, ')
@@ -440,7 +416,7 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
 
   @override
   int get hashCode => Object.hash(id, date, project, type, amount, amountToSell,
-      value, proceeds, costs, realizedPnl, fee, fiatFee, note);
+      value, realizedPnl, fee, fiatFee, note);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -452,8 +428,6 @@ class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
           other.amount == this.amount &&
           other.amountToSell == this.amountToSell &&
           other.value == this.value &&
-          other.proceeds == this.proceeds &&
-          other.costs == this.costs &&
           other.realizedPnl == this.realizedPnl &&
           other.fee == this.fee &&
           other.fiatFee == this.fiatFee &&
@@ -468,8 +442,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
   final Value<Decimal> amount;
   final Value<Decimal> amountToSell;
   final Value<Decimal> value;
-  final Value<Decimal> proceeds;
-  final Value<Decimal> costs;
   final Value<Decimal> realizedPnl;
   final Value<Decimal?> fee;
   final Value<Decimal> fiatFee;
@@ -482,8 +454,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
     this.amount = const Value.absent(),
     this.amountToSell = const Value.absent(),
     this.value = const Value.absent(),
-    this.proceeds = const Value.absent(),
-    this.costs = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.fee = const Value.absent(),
     this.fiatFee = const Value.absent(),
@@ -497,8 +467,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
     this.amount = const Value.absent(),
     this.amountToSell = const Value.absent(),
     this.value = const Value.absent(),
-    this.proceeds = const Value.absent(),
-    this.costs = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.fee = const Value.absent(),
     this.fiatFee = const Value.absent(),
@@ -514,8 +482,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
     Expression<String>? amount,
     Expression<String>? amountToSell,
     Expression<String>? value,
-    Expression<String>? proceeds,
-    Expression<String>? costs,
     Expression<String>? realizedPnl,
     Expression<String>? fee,
     Expression<String>? fiatFee,
@@ -529,8 +495,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
       if (amount != null) 'amount': amount,
       if (amountToSell != null) 'amount_to_sell': amountToSell,
       if (value != null) 'value': value,
-      if (proceeds != null) 'proceeds': proceeds,
-      if (costs != null) 'costs': costs,
       if (realizedPnl != null) 'realized_pnl': realizedPnl,
       if (fee != null) 'fee': fee,
       if (fiatFee != null) 'fiat_fee': fiatFee,
@@ -546,8 +510,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
       Value<Decimal>? amount,
       Value<Decimal>? amountToSell,
       Value<Decimal>? value,
-      Value<Decimal>? proceeds,
-      Value<Decimal>? costs,
       Value<Decimal>? realizedPnl,
       Value<Decimal?>? fee,
       Value<Decimal>? fiatFee,
@@ -560,8 +522,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
       amount: amount ?? this.amount,
       amountToSell: amountToSell ?? this.amountToSell,
       value: value ?? this.value,
-      proceeds: proceeds ?? this.proceeds,
-      costs: costs ?? this.costs,
       realizedPnl: realizedPnl ?? this.realizedPnl,
       fee: fee ?? this.fee,
       fiatFee: fiatFee ?? this.fiatFee,
@@ -598,25 +558,17 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
       final converter = $TransactionsTable.$converter3;
       map['value'] = Variable<String>(converter.toSql(value.value));
     }
-    if (proceeds.present) {
-      final converter = $TransactionsTable.$converter4;
-      map['proceeds'] = Variable<String>(converter.toSql(proceeds.value));
-    }
-    if (costs.present) {
-      final converter = $TransactionsTable.$converter5;
-      map['costs'] = Variable<String>(converter.toSql(costs.value));
-    }
     if (realizedPnl.present) {
-      final converter = $TransactionsTable.$converter6;
+      final converter = $TransactionsTable.$converter4;
       map['realized_pnl'] =
           Variable<String>(converter.toSql(realizedPnl.value));
     }
     if (fee.present) {
-      final converter = $TransactionsTable.$converter7n;
+      final converter = $TransactionsTable.$converter5n;
       map['fee'] = Variable<String>(converter.toSql(fee.value));
     }
     if (fiatFee.present) {
-      final converter = $TransactionsTable.$converter8;
+      final converter = $TransactionsTable.$converter6;
       map['fiat_fee'] = Variable<String>(converter.toSql(fiatFee.value));
     }
     if (note.present) {
@@ -635,8 +587,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionDTO> {
           ..write('amount: $amount, ')
           ..write('amountToSell: $amountToSell, ')
           ..write('value: $value, ')
-          ..write('proceeds: $proceeds, ')
-          ..write('costs: $costs, ')
           ..write('realizedPnl: $realizedPnl, ')
           ..write('fee: $fee, ')
           ..write('fiatFee: $fiatFee, ')
@@ -702,22 +652,6 @@ class $TransactionsTable extends Transactions
               requiredDuringInsert: false,
               defaultValue: const Constant("0.0"))
           .withConverter<Decimal>($TransactionsTable.$converter3);
-  final VerificationMeta _proceedsMeta = const VerificationMeta('proceeds');
-  @override
-  late final GeneratedColumnWithTypeConverter<Decimal, String> proceeds =
-      GeneratedColumn<String>('proceeds', aliasedName, false,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
-          .withConverter<Decimal>($TransactionsTable.$converter4);
-  final VerificationMeta _costsMeta = const VerificationMeta('costs');
-  @override
-  late final GeneratedColumnWithTypeConverter<Decimal, String> costs =
-      GeneratedColumn<String>('costs', aliasedName, false,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
-          .withConverter<Decimal>($TransactionsTable.$converter5);
   final VerificationMeta _realizedPnlMeta =
       const VerificationMeta('realizedPnl');
   @override
@@ -726,13 +660,13 @@ class $TransactionsTable extends Transactions
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               defaultValue: const Constant("0.0"))
-          .withConverter<Decimal>($TransactionsTable.$converter6);
+          .withConverter<Decimal>($TransactionsTable.$converter4);
   final VerificationMeta _feeMeta = const VerificationMeta('fee');
   @override
   late final GeneratedColumnWithTypeConverter<Decimal?, String> fee =
       GeneratedColumn<String>('fee', aliasedName, true,
               type: DriftSqlType.string, requiredDuringInsert: false)
-          .withConverter<Decimal?>($TransactionsTable.$converter7n);
+          .withConverter<Decimal?>($TransactionsTable.$converter5n);
   final VerificationMeta _fiatFeeMeta = const VerificationMeta('fiatFee');
   @override
   late final GeneratedColumnWithTypeConverter<Decimal, String> fiatFee =
@@ -740,7 +674,7 @@ class $TransactionsTable extends Transactions
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               defaultValue: const Constant("0.0"))
-          .withConverter<Decimal>($TransactionsTable.$converter8);
+          .withConverter<Decimal>($TransactionsTable.$converter6);
   final VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
@@ -755,8 +689,6 @@ class $TransactionsTable extends Transactions
         amount,
         amountToSell,
         value,
-        proceeds,
-        costs,
         realizedPnl,
         fee,
         fiatFee,
@@ -790,8 +722,6 @@ class $TransactionsTable extends Transactions
     context.handle(_amountMeta, const VerificationResult.success());
     context.handle(_amountToSellMeta, const VerificationResult.success());
     context.handle(_valueMeta, const VerificationResult.success());
-    context.handle(_proceedsMeta, const VerificationResult.success());
-    context.handle(_costsMeta, const VerificationResult.success());
     context.handle(_realizedPnlMeta, const VerificationResult.success());
     context.handle(_feeMeta, const VerificationResult.success());
     context.handle(_fiatFeeMeta, const VerificationResult.success());
@@ -826,19 +756,13 @@ class $TransactionsTable extends Transactions
       value: $TransactionsTable.$converter3.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}value'])!),
-      proceeds: $TransactionsTable.$converter4.fromSql(attachedDatabase
-          .options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}proceeds'])!),
-      costs: $TransactionsTable.$converter5.fromSql(attachedDatabase
-          .options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}costs'])!),
-      realizedPnl: $TransactionsTable.$converter6.fromSql(attachedDatabase
+      realizedPnl: $TransactionsTable.$converter4.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}realized_pnl'])!),
-      fee: $TransactionsTable.$converter7n.fromSql(attachedDatabase
+      fee: $TransactionsTable.$converter5n.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}fee'])),
-      fiatFee: $TransactionsTable.$converter8.fromSql(attachedDatabase
+      fiatFee: $TransactionsTable.$converter6.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}fiat_fee'])!),
       note: attachedDatabase.options.types
@@ -859,10 +783,8 @@ class $TransactionsTable extends Transactions
   static TypeConverter<Decimal, String> $converter4 = decimalConverter;
   static TypeConverter<Decimal, String> $converter5 = decimalConverter;
   static TypeConverter<Decimal, String> $converter6 = decimalConverter;
-  static TypeConverter<Decimal, String> $converter7 = decimalConverter;
-  static TypeConverter<Decimal, String> $converter8 = decimalConverter;
-  static TypeConverter<Decimal?, String?> $converter7n =
-      NullAwareTypeConverter.wrap($converter7);
+  static TypeConverter<Decimal?, String?> $converter5n =
+      NullAwareTypeConverter.wrap($converter5);
 }
 
 abstract class _$Database extends GeneratedDatabase {

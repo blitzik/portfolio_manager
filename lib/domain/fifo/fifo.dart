@@ -8,12 +8,14 @@ import 'package:portfolio_manager/domain/fifo/trade.dart';
 import 'package:portfolio_manager/domain/fifo/trade_report.dart';
 import 'package:portfolio_manager/domain/fifo/transfer.dart';
 import 'package:decimal/decimal.dart';
+import 'package:portfolio_manager/domain/fifo/withdrawal.dart';
 
 class Fifo {
   final String _symbol;
 
   final List<Transfer> _transfers = [];
   final List<Deposit> _deposits = [];
+  final List<Withdrawal> _withdrawals = [];
   final List<Trade> _trades = [];
   final Queue<Purchase> _purchases = Queue();
   final List<Sale> _sales = [];
@@ -58,17 +60,27 @@ class Fifo {
 
   void addDeposit(DateTime date, Decimal amount) {
     Deposit d = Deposit(date: date, amount: amount);
+    _deposits.add(d);
+    _amount += d.netAmount;
+  }
+
+  void addReward(DateTime date, Decimal amount) {
+    Deposit d = Deposit(date: date, amount: amount);
     _trades.add(Purchase(date: date, amount: amount, costBasis: Decimal.parse("0.0"), fee: Decimal.parse("0.0")));
     _deposits.add(d);
     _amount += d.netAmount;
   }
 
+  void addWithdrawal(DateTime date, Decimal amount) {
+    Withdrawal w = Withdrawal(date: date, amount: amount);
+    _withdrawals.add(w);
+    _amount -= w.netAmount;
+  }
+
   FifoReport generateReport() {
     for (Sale sale in _sales) {
       do {
-        //print("${_purchases.length} | $_amount | ${sale.date} | ${sale.amountToSell}");
         Purchase purchase = _purchases.last;
-        //print("SALE(to sell): ${sale.amountToSell} \n ${purchase.date} \n AMOUNT: ${purchase.amount} \n TO SELL: ${purchase.amountToSell} \n");
         sale.processPurchase(purchase);
         if (purchase.amountToSell == Decimal.zero) {
           _processedPurchases.add(_purchases.removeLast());

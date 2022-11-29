@@ -30,8 +30,9 @@ class Router extends _i5.RootStackRouter {
       return _i5.CustomPage<dynamic>(
         routeData: routeData,
         child: _i5.WrappedRoute(child: const _i1.HomePage()),
-        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
-        durationInMilliseconds: 125,
+        transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 100,
+        reverseDurationInMilliseconds: 100,
         opaque: true,
         barrierDismissible: false,
       );
@@ -46,8 +47,9 @@ class Router extends _i5.RootStackRouter {
           key: args.key,
           onSuccessfullySaved: args.onSuccessfullySaved,
         )),
-        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
-        durationInMilliseconds: 125,
+        transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 100,
+        reverseDurationInMilliseconds: 100,
         opaque: true,
         barrierDismissible: false,
       );
@@ -61,8 +63,9 @@ class Router extends _i5.RootStackRouter {
           args.project,
           key: args.key,
         )),
-        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
-        durationInMilliseconds: 125,
+        transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 100,
+        reverseDurationInMilliseconds: 100,
         opaque: true,
         barrierDismissible: false,
       );
@@ -76,8 +79,9 @@ class Router extends _i5.RootStackRouter {
           args.project,
           key: args.key,
         )),
-        transitionsBuilder: _i5.TransitionsBuilders.slideLeft,
-        durationInMilliseconds: 125,
+        transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 100,
+        reverseDurationInMilliseconds: 100,
         opaque: true,
         barrierDismissible: false,
       );

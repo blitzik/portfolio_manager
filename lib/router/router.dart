@@ -6,8 +6,9 @@ import 'package:portfolio_manager/screens/transaction/transaction_page.dart';
 
 @CustomAutoRouter(
     replaceInRouteName: 'Page,Route',
-    transitionsBuilder: TransitionsBuilders.slideLeft,
-    durationInMilliseconds: 125,
+    transitionsBuilder: TransitionsBuilders.fadeIn,
+    reverseDurationInMilliseconds: 100,
+    durationInMilliseconds: 100,
     routes: <AutoRoute> [
       AutoRoute(page: HomePage, initial: true),
       AutoRoute(page: ProjectPage),
