@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
+import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
@@ -41,7 +42,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
               TextButton(
                 child: const Text("Add transaction"),
                 onPressed: () {
-
+                  AutoRouter.of(context).push(TransactionRoute(project: widget.project));
                 },
               )
             ]

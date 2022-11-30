@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/screens/transaction/transaction_bloc.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
+import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 class TransactionPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
@@ -41,12 +43,17 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Transaction"),
-      ),
-      body: const Center(
-        child: Text("Transaction page"),
-      ),
+      body: Column(
+        children: [
+          TitleBar(
+            title: "${widget.project.name} transaction",
+            cubit: TitleBarCubit()
+          ),
+          Expanded(
+            child: const Text("Transaction :))")
+          )
+        ],
+      )
     );
   }
 }
