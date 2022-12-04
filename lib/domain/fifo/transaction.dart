@@ -1,6 +1,6 @@
 import 'package:decimal/decimal.dart';
 
-enum TransactionType {
+enum TransactionType { //
   deposit, withdrawal, buy, sell, transfer
 }
 

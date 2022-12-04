@@ -35,7 +35,8 @@ class Projects extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().customConstraint("UNIQUE NOT NULL")();
   TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
-  TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get currentAmount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
 }
 
 
@@ -48,7 +49,8 @@ class Transactions extends Table {
   TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get amountToSell => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get value => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get costs => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get fee => text().map(decimalConverter).nullable()();
   TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get note => text().nullable()();

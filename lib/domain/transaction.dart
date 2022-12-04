@@ -15,12 +15,12 @@ class Transaction {
   final Decimal value;
   final Decimal proceeds;
   final Decimal costs;
-  final Decimal realizedPNL;
   final Decimal fee;
   final Decimal fiatFee;
   final String? note;
 
   Decimal get pricePerUnit => (amount / value).toDecimal();
+  Decimal get realizedPnl => (proceeds / costs).toDecimal();
 
   Transaction._({
     this.id,
@@ -32,7 +32,6 @@ class Transaction {
     required this.value,
     required this.proceeds,
     required this.costs,
-    required this.realizedPNL,
     required this.fee,
     required this.fiatFee,
     this.note
@@ -50,8 +49,7 @@ class Transaction {
   }) : type = TransactionType.buy,
        amountToSell = amount,
        costs = value,
-       proceeds = Decimal.zero,
-       realizedPNL = Decimal.zero;
+       proceeds = Decimal.zero;
 
 
   Transaction.sale({
@@ -66,8 +64,7 @@ class Transaction {
   }) : type = TransactionType.sell,
        amountToSell = amount,
        costs = Decimal.zero,
-       proceeds = value,
-       realizedPNL = Decimal.zero;
+       proceeds = value;
 
 
   Transaction.transfer({
@@ -82,8 +79,7 @@ class Transaction {
   }) : type = TransactionType.transfer,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero,
-       realizedPNL = Decimal.zero;
+       proceeds = Decimal.zero;
 
 
   Transaction.deposit({
@@ -98,8 +94,7 @@ class Transaction {
        value = Decimal.zero,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero,
-       realizedPNL = Decimal.zero;
+       proceeds = Decimal.zero;
 
 
   Transaction.withdrawal({
@@ -114,6 +109,5 @@ class Transaction {
        value = Decimal.zero,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero,
-       realizedPNL = Decimal.zero;
+       proceeds = Decimal.zero;
 }

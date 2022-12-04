@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:decimal/decimal.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:portfolio_manager/domain/project.dart';
@@ -25,8 +26,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final Database _db;
 
   TransactionBloc(Project project, this._db) : super(TransactionInitial(project)) {
-    on<TransactionEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+    on<TransactionSaved>(_onTransactionSaved);
+  }
+
+
+  void _onTransactionSaved(TransactionSaved event, Emitter<TransactionState> emit) async{
+
   }
 }

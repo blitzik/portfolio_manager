@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:portfolio_manager/di.dart';
-import 'package:portfolio_manager/domain/fifo/transaction.dart';
+import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/screens/transaction/transaction_bloc.dart';
 import 'package:portfolio_manager/utils/text_input_formatters/decimals_formatter.dart';
@@ -113,7 +113,7 @@ class _TransactionPageState extends State<TransactionPage> {
                             labelText: 'Amount of coins'
                           ),
                           inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter()
+                            DecimalsFormatter(allowNegative: false)
                           ],
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the amount'),
@@ -127,7 +127,7 @@ class _TransactionPageState extends State<TransactionPage> {
                             labelText: 'Total value'
                           ),
                           inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter()
+                            DecimalsFormatter(allowNegative: false)
                           ],
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the value'),
@@ -137,12 +137,12 @@ class _TransactionPageState extends State<TransactionPage> {
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
                           name: 'fee',
-                          decoration: const InputDecoration(
-                            labelText: 'Fee'
+                          decoration: InputDecoration(
+                            labelText: 'Fee [${widget.project.coin}]'
                           ),
                           initialValue: '0.0',
                           inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter()
+                            DecimalsFormatter(allowNegative: false)
                           ],
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the fee'),
@@ -152,11 +152,11 @@ class _TransactionPageState extends State<TransactionPage> {
                         FormBuilderTextField(
                           name: 'fiat_fee',
                           decoration: const InputDecoration(
-                              labelText: 'Fiat Fee'
+                              labelText: 'Fiat Fee [USD]'
                           ),
                           initialValue: '0.0',
                           inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter()
+                            DecimalsFormatter(allowNegative: false)
                           ],
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the fiat fee'),
@@ -174,9 +174,19 @@ class _TransactionPageState extends State<TransactionPage> {
                         ElevatedButton(
                           child: const Text('Save transaction', style: TextStyle(fontSize: 18.0),),
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-
-                            }
+                            if (!_formKey.currentState!.saveAndValidate()) return;
+                            Map<String, dynamic> result = _formKey.currentState!.value;
+                            _bloc.add(
+                              TransactionSaved(
+                                project: widget.project,
+                                  date: result['date_time'],
+                                  amount: result['amount'],
+                                  totalValue: result['value'],
+                                  fee: result['fee'],
+                                  fiatFee: result['fiat_fee'],
+                                  note: result['note']
+                              )
+                            );
                           },
                         )
                       ],
