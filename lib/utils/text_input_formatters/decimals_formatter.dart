@@ -17,10 +17,13 @@ class DecimalsFormatter extends TextInputFormatter {
       return const TextEditingValue(text: '0', selection: TextSelection.collapsed(offset: 1));
     }
 
-    if (_noDigitsButDecimals.hasMatch(newFieldValue) || _leadingZeroesRegExp.hasMatch(newFieldValue)) {
-      newFieldValue = newFieldValue.replaceAll('.', '');
+    if (_leadingZeroesRegExp.hasMatch(newFieldValue)) {
       newFieldValue = int.parse(newFieldValue).toString();
       return TextEditingValue(text: newFieldValue, selection: TextSelection.collapsed(offset: newFieldValue.length));
+    }
+
+    if (_noDigitsButDecimals.hasMatch(newFieldValue)) {
+      return TextEditingValue(text: '0$newFieldValue', selection: const TextSelection.collapsed(offset: 2));
     }
 
     if (!_doubleNumberRegExp.hasMatch(newValue.text)) {

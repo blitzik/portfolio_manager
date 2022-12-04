@@ -45,6 +45,7 @@ class Purchase implements Trade {
        pricePerUnit = (costBasis / amount).toDecimal(),
        fiatFee = (costBasis / amount).toDecimal() * fee;
 
+
   Purchase.fiatFee({
     required this.date,
     required this.amount,
@@ -53,6 +54,7 @@ class Purchase implements Trade {
   }) : _amountToSell = amount,
        pricePerUnit = (costBasis / amount).toDecimal(),
        fee = Decimal.zero;
+
 
   Proceed processSale(Sale sale) {
     Decimal amountSold = _amountToSell <= sale.amountToSell ? _amountToSell : sale.amountToSell;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/fifo/transaction.dart';
 import 'package:portfolio_manager/domain/project.dart';
@@ -29,6 +30,8 @@ class TransactionPage extends StatefulWidget implements AutoRouteWrapper {
 
 class _TransactionPageState extends State<TransactionPage> {
   late final TransactionBloc _bloc;
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey();
+
 
   @override
   void initState() {
@@ -91,28 +94,45 @@ class _TransactionPageState extends State<TransactionPage> {
               child: Column(
                 children: [
                   FormBuilder(
+                    key: _formKey,
                     child: Column(
                       children: [
                         _buildDropDown(),
                         const SizedBox(height: 5.0),
+                        FormBuilderDateTimePicker(
+                          name: 'date_time',
+                          initialValue: DateTime.now(),
+                          decoration: const InputDecoration(
+                            labelText: 'Date and Time'
+                          ),
+                        ),
+                        const SizedBox(height: 5.0),
                         FormBuilderTextField(
                           name: 'amount',
                           decoration: const InputDecoration(
-                            labelText: 'Amount'
+                            labelText: 'Amount of coins'
                           ),
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter()
                           ],
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(errorText: 'Please enter the amount'),
+                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                          ])
                         ),
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
                           name: 'value',
                           decoration: const InputDecoration(
-                            labelText: 'Value'
+                            labelText: 'Total value'
                           ),
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter()
                           ],
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(errorText: 'Please enter the value'),
+                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                          ])
                         ),
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
@@ -120,9 +140,28 @@ class _TransactionPageState extends State<TransactionPage> {
                           decoration: const InputDecoration(
                             labelText: 'Fee'
                           ),
+                          initialValue: '0.0',
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter()
                           ],
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(errorText: 'Please enter the fee'),
+                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                          ])
+                        ),
+                        FormBuilderTextField(
+                          name: 'fiat_fee',
+                          decoration: const InputDecoration(
+                              labelText: 'Fiat Fee'
+                          ),
+                          initialValue: '0.0',
+                          inputFormatters: <TextInputFormatter>[
+                            DecimalsFormatter()
+                          ],
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(errorText: 'Please enter the fiat fee'),
+                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                          ])
                         ),
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
@@ -135,7 +174,9 @@ class _TransactionPageState extends State<TransactionPage> {
                         ElevatedButton(
                           child: const Text('Save transaction', style: TextStyle(fontSize: 18.0),),
                           onPressed: () {
+                            if (_formKey.currentState!.validate()) {
 
+                            }
                           },
                         )
                       ],

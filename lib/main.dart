@@ -59,7 +59,7 @@ void main() async{
   );
 
   doWhenWindowReady(() {
-    const initialSize = Size(600, 450);
+    const initialSize = Size(600, 600);
     appWindow.title = "Portfolio Manager";
     appWindow.minSize = initialSize;
     appWindow.size = initialSize;
