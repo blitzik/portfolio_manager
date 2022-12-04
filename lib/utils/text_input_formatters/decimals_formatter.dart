@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 class DecimalsFormatter extends TextInputFormatter {
   static final _doubleNumberRegExp = RegExp(r'^(0|[1-9][0-9]*)[,.]{0,1}[0-9]*$');
   static final _noDigitsButDecimals = RegExp(r'^\.[0-9]+$');
-  static final _leadingZeroesRegExp = RegExp(r'^00+[1-9]*$');
+  static final _leadingZeroesRegExp = RegExp(r'^00+\.?[0-9]*$');
   static final _zeroesRegExp = RegExp(r'^\.?00+$');
 
   @override
@@ -18,7 +18,7 @@ class DecimalsFormatter extends TextInputFormatter {
     }
 
     if (_leadingZeroesRegExp.hasMatch(newFieldValue)) {
-      newFieldValue = int.parse(newFieldValue).toString();
+      newFieldValue = double.parse(newFieldValue).toString();
       return TextEditingValue(text: newFieldValue, selection: TextSelection.collapsed(offset: newFieldValue.length));
     }
 
