@@ -6,24 +6,47 @@ import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 typedef OnBackClicked = Function();
 
-class TitleBar extends StatelessWidget {
+class TitleBar extends StatefulWidget {
   final String title;
   final OnBackClicked? onBackClicked;
   final bool isBackButtonVisible;
-  final TitleBarCubit cubit;
 
   const TitleBar({
     Key? key,
     required this.title,
     this.onBackClicked,
-    this.isBackButtonVisible = true,
-    required this.cubit
+    this.isBackButtonVisible = true
   }) : super(key: key);
+
+  @override
+  State<TitleBar> createState() => TitleBarState();
+}
+
+class TitleBarState extends State<TitleBar> {
+  final TitleBarCubit _titleBarCubit = TitleBarCubit();
+
+
+  @override
+  void dispose() {
+    _titleBarCubit.close();
+    super.dispose();
+  }
+
+
+  void activateBackButton() {
+    _titleBarCubit.activate();
+  }
+
+
+  void deactivateBackButton() {
+    _titleBarCubit.deactivate();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: cubit,
+      value: _titleBarCubit,
       child: SizedBox(
         height: 50.0,
         child: Container(
@@ -36,12 +59,12 @@ class TitleBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isBackButtonVisible)
+                if (widget.isBackButtonVisible)
                   BlocBuilder<TitleBarCubit, TitleBarInitial>(
                     builder: (context, state) {
                       Function()? onPressed = () {
                         AutoRouter.of(context).pop();
-                        onBackClicked?.call();
+                        widget.onBackClicked?.call();
                       };
                       if (!state.isBackButtonActive) {
                         onPressed = null;
@@ -56,7 +79,7 @@ class TitleBar extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 15.0, left: 15.0),
                       child: Text(
-                        title,
+                        widget.title,
                         style: const TextStyle(
                             fontSize: 15.0, fontWeight: FontWeight.bold),
                       ),

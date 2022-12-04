@@ -34,8 +34,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
         children: [
           TitleBar(
             title: widget.project.name,
-            isBackButtonVisible: true,
-            cubit: TitleBarCubit(),
+            isBackButtonVisible: true
           ),
           Menu(
             children: [

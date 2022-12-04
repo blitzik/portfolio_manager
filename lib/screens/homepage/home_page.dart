@@ -35,10 +35,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Column(
         children: [
-          TitleBar(
+          const TitleBar(
             title: "Portfolio manager",
-            isBackButtonVisible: false,
-            cubit: TitleBarCubit(),
+            isBackButtonVisible: false
           ),
           Menu(
             children: [

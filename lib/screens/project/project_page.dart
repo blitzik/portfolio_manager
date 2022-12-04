@@ -1,14 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
-import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project/project_bloc.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 import 'package:portfolio_manager/widgets/progress_dialog.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
-import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 typedef OnSuccessfullySaved = Function(Project project);
 
@@ -32,17 +31,15 @@ class ProjectPage extends StatefulWidget implements AutoRouteWrapper{
 
 class _ProjectPageState extends State<ProjectPage> {
   late final ProjectBloc _projectBloc;
-  late final GlobalKey<FormState> _formKey;
-  late final TitleBarCubit _titleBarCubit;
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey();
+  final GlobalKey<TitleBarState> _titleBarKey = GlobalKey();
 
   _ProjectPageFormState _projectPageFormState = _ProjectPageFormState(name: "", coin: "");
 
   @override
   void initState() {
     super.initState();
-    _titleBarCubit = TitleBarCubit();
     _projectBloc = BlocProvider.of(context);
-    _formKey = GlobalKey();
   }
 
   @override
@@ -57,35 +54,25 @@ class _ProjectPageState extends State<ProjectPage> {
       body: Column(
         children: [
           TitleBar(
+            key: _titleBarKey,
             title: widget.project == null ? "Create project" : "Edit project",
-            cubit: _titleBarCubit
           ),
           Expanded(
             child: DefaultPadding(
               child: BlocConsumer<ProjectBloc, ProjectState>(
                 listener: (context, state) {
                   if (state is ProjectSaveSuccess) {
-                    _titleBarCubit.activate();
+                    _titleBarKey.currentState!.activateBackButton();
                     widget.onSuccessfullySaved(state.project);
-                    //Navigator.pop(context); // dismiss progress indicator
                     AutoRouter.of(context).pop();
                   }
 
                   if (state is ProjectSaveFailure) {
-                    _titleBarCubit.activate();
-                    //Navigator.pop(context); // dismiss progress indicator
+                    _titleBarKey.currentState!.activateBackButton();
                   }
 
                   if (state is ProjectSaveInProgress) {
-                    _titleBarCubit.deactivate();
-                    /*showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (context) {
-                          return const ProgressDialog(text: "Saving data...");
-                        }
-                    );*/
-                    //return ProgressDialog(text: "Saving data...");
+                    _titleBarKey.currentState!.deactivateBackButton();
                   }
                 },
                 builder: (context, state) {
@@ -102,11 +89,12 @@ class _ProjectPageState extends State<ProjectPage> {
                     return const ProgressDialog(text: "Saving data...");
                   }
 
-                  return Form(
+                  return FormBuilder(
                     key: _formKey,
                     child: Column(
                       children: [
-                        TextFormField(
+                        FormBuilderTextField(
+                          name: 'project_name',
                           decoration: const InputDecoration(
                               labelText: "Project name"
                           ),
@@ -121,7 +109,8 @@ class _ProjectPageState extends State<ProjectPage> {
                           },
                         ),
                         const SizedBox(height: 10.0),
-                        TextFormField(
+                        FormBuilderTextField(
+                          name: 'coin_name',
                           decoration: const InputDecoration(
                             labelText: "Coin name"
                           ),
