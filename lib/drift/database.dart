@@ -51,12 +51,12 @@ class Transactions extends Table {
   TextColumn get value => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get costs => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get fee => text().map(decimalConverter).nullable()();
+  TextColumn get fee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get note => text().nullable()();
 }
 
-bool isInDebugMode = false;
+bool isInDebugMode = true;
 
 @Singleton()
 @DriftDatabase(tables: [Projects, Transactions], daos: [ProjectsDao, TransactionsDao])
@@ -70,16 +70,18 @@ class Database extends _$Database {
   MigrationStrategy get migration => MigrationStrategy(
       onCreate: (Migrator m) async{
         await m.createAll();
-        //await m.createIndex(Index(records.actualTableName, 'CREATE INDEX records_date ON records(date)'));
+        await m.createIndex(Index(transactions.actualTableName, 'CREATE INDEX txs_project_date ON transactions(project, date)'));
       },
       beforeOpen: (details) async {
         await customStatement('PRAGMA foreign_keys = ON');
         if (isInDebugMode) {
           final m = Migrator(this);
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-            await m.createTable(table);
-          }
+          await m.deleteTable(transactions.actualTableName);
+          await m.deleteTable(projects.actualTableName);
+
+          await m.createTable(projects);
+          await m.createTable(transactions);
+          await m.createIndex(Index(transactions.actualTableName, 'CREATE INDEX txs_project_date ON transactions(project, date)'));
         }
       },
       onUpgrade: (Migrator m, oldVersion, newVersion) async{

@@ -4,8 +4,9 @@ part of 'transaction_bloc.dart';
 abstract class TransactionEvent {}
 
 class TransactionSaved extends TransactionEvent {
-  final Project project;
+  final TransactionType type;
   final DateTime date;
+  final Project project;
   final Decimal amount;
   final Decimal totalValue;
   final Decimal fee;
@@ -13,8 +14,9 @@ class TransactionSaved extends TransactionEvent {
   final String note;
 
   TransactionSaved({
-    required this.project,
     required this.date,
+    required this.type,
+    required this.project,
     required this.amount,
     required this.totalValue,
     required this.fee,

@@ -5,6 +5,7 @@ enum TransactionType { //
 }
 
 abstract class Transaction {
+  int get id;
   DateTime get date;
   Decimal get amount;
   Decimal get netAmount;

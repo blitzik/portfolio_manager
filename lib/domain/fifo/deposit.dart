@@ -3,6 +3,9 @@ import 'package:decimal/decimal.dart';
 
 class Deposit implements Transaction {
   @override
+  final int id;
+
+  @override
   final DateTime date;
 
   @override
@@ -12,15 +15,18 @@ class Deposit implements Transaction {
   final Decimal netAmount;
 
   @override
-  final Decimal fee = Decimal.parse("0.0");
+  final Decimal fee;
 
   @override
-  final Decimal fiatFee = Decimal.parse("0.0");
+  final Decimal fiatFee;
 
 
   Deposit({
+    required this.id,
     required this.date,
-    required this.amount
+    required this.amount,
+    required this.fee,
+    required this.fiatFee
   }) : netAmount = amount;
 
 }

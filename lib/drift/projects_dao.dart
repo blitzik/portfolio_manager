@@ -16,7 +16,8 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
     ProjectsCompanion p = ProjectsCompanion(
       name: Value<String>(project.name),
       coin: Value<String>(project.coin),
-      amount: Value<Decimal>(project.amount)
+      currentAmount: Value<Decimal>(project.amount),
+      realizedPnl: Value<Decimal>(project.realizedPnl)
     );
 
     try {
@@ -29,7 +30,15 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         dto = await (select(projects)..where((tbl) => tbl.id.equals(project.id!))).getSingle();
       }
 
-      result = ResultObject(Project(name: dto.name, coin: dto.coin, amount: dto.amount, id: dto.id));
+      result = ResultObject(
+        Project(
+          name: dto.name,
+          coin: dto.coin,
+          amount: dto.currentAmount,
+          realizedPnl: dto.realizedPnl,
+          id: dto.id
+        )
+      );
 
     } on SqliteException catch(e) {
       if (e.extendedResultCode == 2067) { // UNIQUE CONSTRAINT ERROR CODE
@@ -51,7 +60,8 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         return Project(
           name: row.name,
           coin: row.coin,
-          amount: row.amount,
+          amount: row.currentAmount,
+          realizedPnl: row.realizedPnl,
           id: row.id
         );
       }).toList());

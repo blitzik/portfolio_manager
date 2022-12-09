@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -179,12 +180,13 @@ class _TransactionPageState extends State<TransactionPage> {
                             _bloc.add(
                               TransactionSaved(
                                 project: widget.project,
-                                  date: result['date_time'],
-                                  amount: result['amount'],
-                                  totalValue: result['value'],
-                                  fee: result['fee'],
-                                  fiatFee: result['fiat_fee'],
-                                  note: result['note']
+                                date: result['date_time'],
+                                type: TransactionType.values[result['type']],
+                                amount: Decimal.parse(result['amount']),
+                                totalValue: Decimal.parse(result['value']),
+                                fee: Decimal.parse(result['fee']),
+                                fiatFee: Decimal.parse(result['fiat_fee']),
+                                note: result['note']
                               )
                             );
                           },

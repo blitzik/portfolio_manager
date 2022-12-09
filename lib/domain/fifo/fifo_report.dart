@@ -2,6 +2,7 @@ import 'package:portfolio_manager/domain/fifo/deposit.dart';
 import 'package:portfolio_manager/domain/fifo/transfer.dart';
 import 'package:decimal/decimal.dart';
 import 'package:portfolio_manager/domain/fifo/trade_report.dart';
+import 'package:portfolio_manager/domain/fifo/withdrawal.dart';
 
 d(String s) => Decimal.parse(s);
 typedef OnField = Decimal Function(TradeReport report);
@@ -11,6 +12,7 @@ class FifoReport {
   final List<TradeReport> trades;
   final List<Transfer> transfers;
   final List<Deposit> deposits;
+  final List<Withdrawal> withdrawals;
 
   Decimal _currentAmount = d("0.0");
   Decimal get currentAmount => _currentAmount;
@@ -48,8 +50,14 @@ class FifoReport {
   Decimal get totalNetPNL => totalRealizedPNL - totalFiatFees;
 
 
-  FifoReport(this.symbol, this.trades, this.transfers, this.deposits) {
-    for (TradeReport r in trades) {
+  FifoReport(
+    this.symbol,
+    this.trades,
+    this.transfers,
+    this.deposits,
+    this.withdrawals
+  ) {
+    for (TradeReport r in trades) { // TODO withdrawals
       if (r.type == TradeType.long) {
         _currentAmount += r.amount;
         _purchaseFees += r.fee;

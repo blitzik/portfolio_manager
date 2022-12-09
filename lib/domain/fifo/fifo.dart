@@ -10,6 +10,8 @@ import 'package:portfolio_manager/domain/fifo/transfer.dart';
 import 'package:decimal/decimal.dart';
 import 'package:portfolio_manager/domain/fifo/withdrawal.dart';
 
+typedef OnTradeReportCreated = Function(TradeReport report);
+
 class Fifo {
   final String _symbol;
 
@@ -28,56 +30,42 @@ class Fifo {
     required String symbol
   }) : _symbol = symbol;
 
-  void addPurchase(DateTime date, Decimal amount, Decimal costBasis, Decimal fee) {
-    Purchase p = Purchase(date: date, amount: amount, costBasis: costBasis, fee: fee);
+
+  void addPurchase(int id, DateTime date, Decimal amount, Decimal costBasis, Decimal fee) {
+    Purchase p = Purchase(id: id, date: date, amount: amount, costBasis: costBasis, fee: fee);
     _amount += p.netAmount;
     //_transactions.add(p);
     _trades.add(p);
     _purchases.addFirst(p);
   }
 
-  void addPurchaseFiatFee(DateTime date, Decimal amount, Decimal costBasis, Decimal fiatFee) {
-    Purchase p = Purchase.fiatFee(date: date, amount: amount, costBasis: costBasis, fiatFee: fiatFee);
-    _amount += p.netAmount;
-    //_transactions.add(p);
-    _trades.add(p);
-    _purchases.addFirst(p);
-  }
-
-  void addSale(DateTime date, Decimal amount, Decimal profit, Decimal fiatFee) {
-    Sale s = Sale(date: date, amount: amount, profit: profit, fiatFee: fiatFee);
+  void addSale(int id, DateTime date, Decimal amount, Decimal profit, Decimal fiatFee) {
+    Sale s = Sale(id: id, date: date, amount: amount, profit: profit, fiatFee: fiatFee);
     //_transactions.add(s);
     _trades.add(s);
     _sales.add(s);
   }
 
-  void addTransfer(DateTime date, Decimal amount, Decimal fee, Decimal fiatFee) {
-    Transfer t = Transfer(date: date, amount: amount, fee: fee, fiatFee: fiatFee);
+  void addTransfer(int id, DateTime date, Decimal amount, Decimal fee, Decimal fiatFee) {
+    Transfer t = Transfer(id: id, date: date, amount: amount, fee: fee, fiatFee: fiatFee);
     //_transactions.add(t);
     _transfers.add(t);
     _amount -= fee;
   }
 
-  void addDeposit(DateTime date, Decimal amount) {
-    Deposit d = Deposit(date: date, amount: amount);
+  void addDeposit(int id, DateTime date, Decimal amount, Decimal fee, Decimal fiatFee) {
+    Deposit d = Deposit(id: id, date: date, amount: amount, fee: fee, fiatFee: fiatFee);
     _deposits.add(d);
     _amount += d.netAmount;
   }
 
-  void addReward(DateTime date, Decimal amount) {
-    Deposit d = Deposit(date: date, amount: amount);
-    _trades.add(Purchase(date: date, amount: amount, costBasis: Decimal.parse("0.0"), fee: Decimal.parse("0.0")));
-    _deposits.add(d);
-    _amount += d.netAmount;
-  }
-
-  void addWithdrawal(DateTime date, Decimal amount) {
-    Withdrawal w = Withdrawal(date: date, amount: amount);
+  void addWithdrawal(int id, DateTime date, Decimal amount, Decimal fee, Decimal fiatFee) {
+    Withdrawal w = Withdrawal(id: id, date: date, amount: amount, fee: fee, fiatFee: fiatFee);
     _withdrawals.add(w);
     _amount -= w.netAmount;
   }
 
-  FifoReport generateReport() {
+  void _processTransactions() {
     for (Sale sale in _sales) {
       do {
         Purchase purchase = _purchases.last;
@@ -92,10 +80,13 @@ class Fifo {
         throw Exception("Amount \"(${_amount})\" cannot be lower than zero!"); // todo
       }
     }
+  }
 
+  List<TradeReport> getTradeReports({OnTradeReportCreated? onTradeReportCreated}) {
     List<TradeReport> tradeReports = [];
     for (Trade t in _trades) {
       TradeReport report = TradeReport(
+          id: t.id,
           date: t.date,
           symbol: _symbol,
           type: (t is Sale) ? TradeType.short : TradeType.long,
@@ -109,7 +100,16 @@ class Fifo {
           fiatFee: t.fiatFee
       );
       tradeReports.add(report);
+      onTradeReportCreated?.call(report);
     }
-    return FifoReport(_symbol, tradeReports, _transfers, _deposits);
+
+    return tradeReports;
+  }
+
+  FifoReport generateFiFoReport() {
+    _processTransactions();
+
+    List<TradeReport> tradeReports = getTradeReports();
+    return FifoReport(_symbol, tradeReports, _transfers, _deposits, _withdrawals);
   }
 }

@@ -5,6 +5,9 @@ import 'package:decimal/decimal.dart';
 
 class Purchase implements Trade {
   @override
+  final int id;
+
+  @override
   final DateTime date;
 
   @override
@@ -37,22 +40,24 @@ class Purchase implements Trade {
   Decimal get amountToSell => _amountToSell;
 
   Purchase({
+    required this.id,
     required this.date,
     required this.amount,
     required this.costBasis,
     required this.fee,
   }) : _amountToSell = amount,
-       pricePerUnit = (costBasis / amount).toDecimal(),
-       fiatFee = (costBasis / amount).toDecimal() * fee;
+       pricePerUnit = (costBasis / amount).toDecimal(scaleOnInfinitePrecision: 12),
+       fiatFee = (costBasis / amount).toDecimal(scaleOnInfinitePrecision: 12) * fee;
 
 
   Purchase.fiatFee({
+    required this.id,
     required this.date,
     required this.amount,
     required this.costBasis,
     required this.fiatFee,
   }) : _amountToSell = amount,
-       pricePerUnit = (costBasis / amount).toDecimal(),
+       pricePerUnit = (costBasis / amount).toDecimal(scaleOnInfinitePrecision: 12),
        fee = Decimal.zero;
 
 

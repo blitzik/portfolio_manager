@@ -5,6 +5,7 @@ enum TradeType {
 }
 
 class TradeReport {
+  final int id;
   final DateTime date;
   final String symbol;
   final TradeType type;
@@ -18,6 +19,7 @@ class TradeReport {
   final Decimal fiatFee;
 
   const TradeReport({
+    required this.id,
     required this.date,
     required this.symbol,
     required this.type,

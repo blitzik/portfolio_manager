@@ -25,7 +25,13 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   void _onProjectSaveClicked(ProjectSaveClicked event, Emitter<ProjectState> emit) async{
     emit(ProjectSaveInProgress());
 
-    Project project = event.project ?? Project(name: event.name, coin: event.coin, amount: Decimal.zero);
+    Project project = event.project ??
+        Project(
+          name: event.name,
+          coin: event.coin,
+          amount: Decimal.zero,
+          realizedPnl: Decimal.zero
+        );
 
     //await Future.delayed(Duration(seconds: 5));
     ResultObject<Project> savingProject = await _db.projectsDao.save(project);

@@ -3,6 +3,9 @@ import 'package:decimal/decimal.dart';
 
 class Transfer implements Transaction{
   @override
+  final int id;
+
+  @override
   final DateTime date;
 
   @override
@@ -19,6 +22,7 @@ class Transfer implements Transaction{
 
 
   Transfer({
+    required this.id,
     required this.date,
     required this.amount,
     required this.fee,

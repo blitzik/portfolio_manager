@@ -5,6 +5,9 @@ import 'package:decimal/decimal.dart';
 
 class Sale implements Trade {
   @override
+  final int id;
+
+  @override
   final DateTime date;
 
   @override
@@ -39,12 +42,13 @@ class Sale implements Trade {
   Decimal get costBasis => _costBasis;
 
   Sale({
+    required this.id,
     required this.date,
     required this.amount,
     required this.profit,
     required this.fiatFee
   }) : _amountToSell = amount,
-       pricePerUnit = (profit / amount).toDecimal();
+       pricePerUnit = (profit / amount).toDecimal(scaleOnInfinitePrecision: 12);
 
 
   void processPurchase(Purchase purchase) {

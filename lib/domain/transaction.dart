@@ -22,7 +22,7 @@ class Transaction {
   Decimal get pricePerUnit => (amount / value).toDecimal();
   Decimal get realizedPnl => (proceeds / costs).toDecimal();
 
-  Transaction._({
+  Transaction({
     this.id,
     required this.date,
     required this.project,

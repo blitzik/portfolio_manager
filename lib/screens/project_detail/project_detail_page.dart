@@ -7,7 +7,6 @@ import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
-import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
@@ -20,13 +19,29 @@ class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context  ) {
     return BlocProvider(
-      create: (context) => getIt<ProjectDetailBlocFactory>().create(project),
+      create: (context) => getIt<ProjectDetailBlocFactory>().create(project)..add(ProjectDetailTransactionsLoaded()),
       child: this,
     );
   }
 }
 
 class _ProjectDetailPageState extends State<ProjectDetailPage> {
+  late final ProjectDetailBloc _projectDetailBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _projectDetailBloc = BlocProvider.of<ProjectDetailBloc>(context);
+  }
+
+
+  @override
+  void dispose() {
+    _projectDetailBloc.close();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +64,29 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
           Expanded(
             child: Column(
               children: [
-                // TODO
+                Expanded(
+                  child: BlocBuilder<ProjectDetailBloc, ProjectDetailState>(
+                    builder: (context, state) {
+                      if (state is ProjectDetailLoadInProgress) {
+                        return Column(
+                          children: const [
+                            Text("Loading data..."),
+                            CircularProgressIndicator()
+                          ],
+                        );
+                      }
+
+                      final txs = (state as ProjectDetailTransactionsLoadedSuccessfully).transactions;
+                      return ListView.builder(
+                        itemCount: txs.length,
+                        itemBuilder: (context, index) {
+                          final tx = txs[index];
+                          return Text("${tx.id} - ${tx.date} - ${tx.value}");
+                        }
+                      );
+                    },
+                  )
+                )
               ],
             )
           )
