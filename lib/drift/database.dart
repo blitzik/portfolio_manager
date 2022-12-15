@@ -24,7 +24,8 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     // put the database file, called db.sqlite here, into the documents folder
     // for your app.
-    final dbFolder = await getApplicationDocumentsDirectory();
+    //final dbFolder = await getApplicationDocumentsDirectory();
+    final dbFolder = Directory('.');
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     return NativeDatabase(file, logStatements: true);
   });
@@ -37,6 +38,7 @@ class Projects extends Table {
   TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
   TextColumn get currentAmount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get currentCosts => text().map(decimalConverter).withDefault(const Constant("0.0"))();
 }
 
 
@@ -56,7 +58,7 @@ class Transactions extends Table {
   TextColumn get note => text().nullable()();
 }
 
-bool isInDebugMode = true;
+bool isInDebugMode = false;
 
 @Singleton()
 @DriftDatabase(tables: [Projects, Transactions], daos: [ProjectsDao, TransactionsDao])

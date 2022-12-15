@@ -32,9 +32,6 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     emit(ProjectDetailLoadInProgress(state.project));
 
     final result = await _db.transactionsDao.findTransactions(state.project.id!);
-    for (Transaction t in result.value ?? []) {
-      print("#${t.id}");
-    }
     if (result.isSuccess) {
       emit(ProjectDetailTransactionsLoadedSuccessfully(state.project, result.value ?? []));
     }

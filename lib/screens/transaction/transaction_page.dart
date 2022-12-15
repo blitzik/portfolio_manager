@@ -32,6 +32,7 @@ class TransactionPage extends StatefulWidget implements AutoRouteWrapper {
 class _TransactionPageState extends State<TransactionPage> {
   late final TransactionBloc _bloc;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
+  TransactionType _selectedType = TransactionType.buy;
 
 
   @override
@@ -119,7 +120,8 @@ class _TransactionPageState extends State<TransactionPage> {
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the amount'),
                             FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ])
+                          ]),
+                          //onChanged: _onChanged,
                         ),
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
@@ -133,7 +135,8 @@ class _TransactionPageState extends State<TransactionPage> {
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(errorText: 'Please enter the value'),
                             FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ])
+                          ]),
+                         //onChanged: _onChanged
                         ),
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
@@ -142,6 +145,7 @@ class _TransactionPageState extends State<TransactionPage> {
                             labelText: 'Fee [${widget.project.coin}]'
                           ),
                           initialValue: '0.0',
+                          //onChanged: _onChanged,
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter(allowNegative: false)
                           ],
@@ -202,4 +206,27 @@ class _TransactionPageState extends State<TransactionPage> {
       )
     );
   }
+
+  /*void _onChanged(String? val) {
+    if (val == null || val.isEmpty) {
+      _formKey.currentState!.fields['fiat_fee']?.didChange('0.0');
+      return;
+    }
+    final valueFieldVal = _formKey.currentState!.fields['value']!.value;
+    final amountFieldVal = _formKey.currentState!.fields['amount']!.value;
+    if (valueFieldVal == null || amountFieldVal == null) return;
+
+    final amount = Decimal.parse(amountFieldVal);
+    if (amount == Decimal.zero) return;
+
+    final value = Decimal.parse(valueFieldVal);
+    final fee = Decimal.parse(_formKey.currentState!.fields['fee']!.value);
+    if (fee == Decimal.zero) {
+      _formKey.currentState!.fields['fiat_fee']?.didChange('0.0');
+      return;
+    }
+
+    final ppc = (value / amount).toDecimal(scaleOnInfinitePrecision: 12);
+    _formKey.currentState!.fields['fiat_fee']?.didChange((ppc * fee).toString());
+  }*/
 }

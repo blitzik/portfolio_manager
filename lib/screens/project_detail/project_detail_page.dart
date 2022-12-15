@@ -5,6 +5,9 @@ import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
+import 'package:portfolio_manager/screens/project_detail/transaction_item.dart';
+import 'package:portfolio_manager/utils/custom_text_styles.dart';
+import 'package:portfolio_manager/widgets/default_padding.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
@@ -62,32 +65,68 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
             ]
           ),
           Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: BlocBuilder<ProjectDetailBloc, ProjectDetailState>(
-                    builder: (context, state) {
-                      if (state is ProjectDetailLoadInProgress) {
-                        return Column(
-                          children: const [
-                            Text("Loading data..."),
-                            CircularProgressIndicator()
+            child: DefaultPadding(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Text('Current holdings', style: CustomTextStyles.rowHeader),
+                            Text('${widget.project.amount}'),
                           ],
-                        );
-                      }
-
-                      final txs = (state as ProjectDetailTransactionsLoadedSuccessfully).transactions;
-                      return ListView.builder(
-                        itemCount: txs.length,
-                        itemBuilder: (context, index) {
-                          final tx = txs[index];
-                          return Text("${tx.id} - ${tx.date} - ${tx.value}");
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Text('Current holdings cost', style: CustomTextStyles.rowHeader),
+                            Text('${widget.project.currentCosts}'),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Text('Gross realized P/L', style: CustomTextStyles.rowHeader),
+                            Text('${widget.project.realizedPnl}'),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 50.0,),
+                  const Text('Transactions'),
+                  const SizedBox(height: 25.0,),
+                  Expanded(
+                    child: BlocBuilder<ProjectDetailBloc, ProjectDetailState>(
+                      builder: (context, state) {
+                        if (state is ProjectDetailLoadInProgress) {
+                          return Column(
+                            children: const [
+                              Text("Loading data..."),
+                              CircularProgressIndicator()
+                            ],
+                          );
                         }
-                      );
-                    },
+
+                        final txs = (state as ProjectDetailTransactionsLoadedSuccessfully).transactions;
+                        return ListView.separated(
+                          separatorBuilder: (context, index) {
+                            return const Divider(thickness: 1.0, color: Colors.black45,);
+                          },
+                          itemCount: txs.length,
+                          itemBuilder: (context, index) {
+                            final tx = txs[index];
+                            return TransactionItem(transaction: tx);
+                          }
+                        );
+                      },
+                    )
                   )
-                )
-              ],
+                ],
+              ),
             )
           )
         ],

@@ -26,20 +26,16 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
             project: Value<int>(tx.project.id!),
             type: Value<TransactionType>(tx.type),
             amount: Value<Decimal>(tx.amount),
-            value: Value<Decimal>(tx.value),
             amountToSell: Value<Decimal>(tx.amountToSell),
+            value: Value<Decimal>(tx.value),
+            costs: Value<Decimal>(tx.costs),
+            proceeds: Value<Decimal>(tx.proceeds),
             fee: Value<Decimal>(tx.fee),
             fiatFee: Value<Decimal>(tx.fiatFee),
-            note: Value<String?>(tx.note)
+            note: Value<String?>(tx.note),
         );
 
         int id = await into(transactions).insertOnConflictUpdate(tcomp);
-
-        /*final query = select(transactions).join([
-          leftOuterJoin(projects, projects.id.equalsExp(transactions.project))
-        ]);
-        query.orderBy([OrderingTerm.asc(transactions.date)]);
-        query.where(transactions.project.equals(tx.project.id!));*/
 
         final query = select(transactions);
         query.orderBy([(t) => OrderingTerm(expression: transactions.date, mode: OrderingMode.asc)]);
@@ -85,17 +81,19 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
           }
         }
 
+        final q = select(transactions)..where((tbl) => tbl.id.equals(id));
+        TransactionDTO savedTransaction = await q.getSingle();
+
         Map<int, TransactionDTO> txsMap = { for (TransactionDTO t in resultList) t.id : t };
         await batch((batch) {
-          fifo.getTradeReports(
-              onTradeReportCreated: (TradeReport report) {
+          fifo.processTransactions(
+              onTradeProcessed: (TradeReport report) {
                 if (!txsMap.containsKey(report.id)) throw Exception("No transaction with id #[${report.id}] found!"); // TODO
 
                 TransactionDTO dto = txsMap[report.id]!;
-                if (
-                  report.amountToSell != dto.amountToSell ||
-                  report.proceeds != dto.proceeds ||
-                  report.costs != dto.costs)
+                if (report.amountToSell != dto.amountToSell ||
+                    report.proceeds != dto.proceeds ||
+                    report.costs != dto.costs)
                 {
                   batch.update(
                     transactions,
@@ -109,24 +107,31 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
                 }
               }
           );
+          batch.update(
+            projects,
+            ProjectsCompanion(
+              currentAmount: Value<Decimal>(fifo.currentAmount),
+              currentCosts: Value<Decimal>(fifo.currentCostBasis),
+              realizedPnl: Value<Decimal>(fifo.totalProceeds),
+            ),
+            where: (tbl) => tbl.id.equals(savedTransaction.project)
+          );
         });
 
-        final q = select(transactions)..where((tbl) => tbl.id.equals(id));
-        TransactionDTO dto = await q.getSingle();
         return ResultObject(
           Transaction(
-            id: dto.id,
+            id: savedTransaction.id,
             project: tx.project,
-            date: dto.date,
-            type: dto.type,
-            amount: dto.amount,
-            amountToSell: dto.amountToSell,
-            value: dto.value,
-            costs: dto.costs,
-            proceeds: dto.proceeds,
-            fee: dto.fee,
-            fiatFee: dto.fiatFee,
-            note: dto.note
+            date: savedTransaction.date,
+            type: savedTransaction.type,
+            amount: savedTransaction.amount,
+            amountToSell: savedTransaction.amountToSell,
+            value: savedTransaction.value,
+            costs: savedTransaction.costs,
+            proceeds: savedTransaction.proceeds,
+            fee: savedTransaction.fee,
+            fiatFee: savedTransaction.fiatFee,
+            note: savedTransaction.note
           )
         );
       });
@@ -160,6 +165,7 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
             name: p.name,
             coin: p.coin,
             amount: p.currentAmount,
+            currentCosts: p.currentCosts,
             realizedPnl: p.realizedPnl
           ),
           type: t.type,

@@ -35,6 +35,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
           name: dto.name,
           coin: dto.coin,
           amount: dto.currentAmount,
+          currentCosts: dto.currentCosts,
           realizedPnl: dto.realizedPnl,
           id: dto.id
         )
@@ -61,6 +62,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
           name: row.name,
           coin: row.coin,
           amount: row.currentAmount,
+          currentCosts: row.currentCosts,
           realizedPnl: row.realizedPnl,
           id: row.id
         );

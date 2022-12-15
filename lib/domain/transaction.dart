@@ -19,8 +19,11 @@ class Transaction {
   final Decimal fiatFee;
   final String? note;
 
-  Decimal get pricePerUnit => (amount / value).toDecimal();
-  Decimal get realizedPnl => (proceeds / costs).toDecimal();
+  Decimal get pricePerUnit => value == Decimal.zero ? Decimal.zero : (value / amount).toDecimal(scaleOnInfinitePrecision: 12);
+  Decimal get realizedPnl => proceeds - costs;
+  Decimal? get roi => realizedPnl == Decimal.zero || costs == Decimal.zero ?
+                      null :
+                      (realizedPnl / costs).toDecimal(scaleOnInfinitePrecision: 12) * Decimal.fromInt(100);
 
   Transaction({
     this.id,
@@ -44,12 +47,12 @@ class Transaction {
     required this.amount,
     required this.value,
     required this.fee,
-    required this.fiatFee,
     this.note
   }) : type = TransactionType.buy,
        amountToSell = amount,
        costs = value,
-       proceeds = Decimal.zero;
+       proceeds = Decimal.zero,
+       fiatFee = (value / amount).toDecimal(scaleOnInfinitePrecision: 12) * fee;
 
 
   Transaction.sale({
@@ -58,13 +61,13 @@ class Transaction {
     required this.project,
     required this.amount,
     required this.value,
-    required this.fee,
     required this.fiatFee,
     this.note
   }) : type = TransactionType.sell,
        amountToSell = amount,
        costs = Decimal.zero,
-       proceeds = value;
+       proceeds = value,
+       fee = Decimal.zero;
 
 
   Transaction.transfer({
@@ -74,12 +77,12 @@ class Transaction {
     required this.amount,
     required this.value,
     required this.fee,
-    required this.fiatFee,
     this.note
   }) : type = TransactionType.transfer,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero;
+       proceeds = Decimal.zero,
+       fiatFee = (value / amount).toDecimal(scaleOnInfinitePrecision: 12) * fee;
 
 
   Transaction.deposit({
@@ -87,14 +90,14 @@ class Transaction {
     required this.date,
     required this.project,
     required this.amount,
+    required this.value,
     required this.fee,
-    required this.fiatFee,
     this.note
   }) : type = TransactionType.deposit,
-       value = Decimal.zero,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero;
+       proceeds = Decimal.zero,
+       fiatFee = (value / amount).toDecimal(scaleOnInfinitePrecision: 12) * fee;
 
 
   Transaction.withdrawal({
@@ -102,12 +105,13 @@ class Transaction {
     required this.date,
     required this.project,
     required this.amount,
+    required this.value,
     required this.fee,
-    required this.fiatFee,
     this.note
   }) : type = TransactionType.withdrawal,
-       value = Decimal.zero,
        amountToSell = Decimal.zero,
        costs = Decimal.zero,
-       proceeds = Decimal.zero;
+       proceeds = Decimal.zero,
+       fiatFee = (value / amount).toDecimal(scaleOnInfinitePrecision: 12) * fee;
+
 }

@@ -32,20 +32,62 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
 
   void _onTransactionSaved(TransactionSaved event, Emitter<TransactionState> emit) async{
-    final result = await _db.transactionsDao.save(
-      Transaction(
-        date: event.date,
-        project: event.project,
-        type: event.type,
-        amount: event.amount,
-        amountToSell: Decimal.zero,
-        value: event.totalValue,
-        proceeds: Decimal.zero,
-        costs: Decimal.zero,
-        fee: event.fee,
-        fiatFee: event.fiatFee,
-        note: event.note.isEmpty ? null : event.note
-      )
-    );
+    String? note = event.note == null ?  null : event.note!.trim();
+
+    Transaction tx;
+    switch (event.type) {
+      case TransactionType.deposit:
+        tx = Transaction.deposit(
+          date: event.date,
+          project: event.project,
+          amount: event.amount,
+          value: event.totalValue,
+          fee: event.fee,
+          note: note
+        );
+        break;
+      case TransactionType.withdrawal:
+        tx = Transaction.withdrawal(
+          date: event.date,
+          project: event.project,
+          amount: event.amount,
+          value: event.totalValue,
+          fee: event.fee,
+          note: note
+        );
+        break;
+      case TransactionType.buy:
+        tx = Transaction.purchase(
+          date: event.date,
+          project: event.project,
+          amount: event.amount,
+          value: event.totalValue,
+          fee: event.fee,
+          note: note
+        );
+        break;
+      case TransactionType.sell:
+        tx = Transaction.sale(
+          date: event.date,
+          project: event.project,
+          amount: event.amount,
+          value: event.totalValue,
+          fiatFee: event.fiatFee,
+          note: note
+        );
+        break;
+      case TransactionType.transfer:
+        tx = Transaction.transfer(
+          date: event.date,
+          project: event.project,
+          amount: event.amount,
+          value: event.totalValue,
+          fee: event.fee,
+          note: note
+        );
+        break;
+    }
+
+    final result = await _db.transactionsDao.save(tx);
   }
 }

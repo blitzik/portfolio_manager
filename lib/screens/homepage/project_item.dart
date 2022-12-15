@@ -9,8 +9,8 @@ class ProjectItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(project.name),
-      subtitle: Text("${project.amount}"),
+      title: Text(project.name, style: const TextStyle(fontSize: 18.0),),
+      subtitle: Text("Holdings: ${project.amount} | Holdings costs: ${project.currentCosts}"),
     );
   }
 }

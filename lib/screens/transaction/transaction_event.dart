@@ -11,7 +11,7 @@ class TransactionSaved extends TransactionEvent {
   final Decimal totalValue;
   final Decimal fee;
   final Decimal fiatFee;
-  final String note;
+  final String? note;
 
   TransactionSaved({
     required this.date,
