@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/extensions/string_extension.dart';
 import 'package:portfolio_manager/utils/custom_text_styles.dart';
+import 'package:portfolio_manager/utils/number_formatter.dart';
 import 'package:portfolio_manager/widgets/date.dart';
+import 'package:portfolio_manager/widgets/money_usd.dart';
 
 class Sell extends StatelessWidget {
   final Transaction transaction;
@@ -29,7 +31,7 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Proceeds', style: CustomTextStyles.rowHeader,),
-                  Text('${transaction.proceeds}')
+                  MoneyUsd(transaction.proceeds)
                 ],
               ),
             ),
@@ -38,7 +40,7 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Cost basis', style: CustomTextStyles.rowHeader,),
-                  Text('${transaction.costs}')
+                  MoneyUsd(transaction.costs)
                 ],
               ),
             ),
@@ -47,7 +49,8 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Realized P/L', style: CustomTextStyles.rowHeader,),
-                  Text('${transaction.realizedPnl}')
+                  MoneyUsd(transaction.realizedPnl, isColored: true)
+                  //Text('${NumberFormatter.formatDecimal(transaction.realizedPnl)}', style: CustomTextStyles.decideNumberColor(transaction.realizedPnl),)
                 ],
               ),
             ),
@@ -69,7 +72,7 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Fiat Fee', style: CustomTextStyles.rowHeader,),
-                  Text('${transaction.fiatFee}')
+                  Text('${NumberFormatter.formatDecimal(transaction.fiatFee)}')
                 ],
               ),
             ),
@@ -78,7 +81,7 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Gain', style: CustomTextStyles.rowHeader,),
-                  transaction.roi == null ? const Text('-') : Text('${transaction.roi}%')
+                  transaction.roi == null ? const Text('-') : Text('${transaction.roi?.toStringAsPrecision(5)}%', style: CustomTextStyles.decideNumberColor(transaction.roi!),)
                 ],
               ),
             ),

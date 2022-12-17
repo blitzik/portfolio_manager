@@ -6,9 +6,11 @@ import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
 import 'package:portfolio_manager/screens/project_detail/transaction_item.dart';
+import 'package:portfolio_manager/utils/number_formatter.dart';
 import 'package:portfolio_manager/utils/custom_text_styles.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
+import 'package:portfolio_manager/widgets/money_usd.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
 class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
@@ -82,7 +84,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                         child: Column(
                           children: [
                             const Text('Current holdings cost', style: CustomTextStyles.rowHeader),
-                            Text('${widget.project.currentCosts}'),
+                            MoneyUsd(widget.project.currentCosts)
                           ],
                         ),
                       ),
@@ -90,7 +92,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                         child: Column(
                           children: [
                             const Text('Gross realized P/L', style: CustomTextStyles.rowHeader),
-                            Text('${widget.project.realizedPnl}'),
+                            MoneyUsd(widget.project.realizedPnl, isColored: true,)
                           ],
                         ),
                       )

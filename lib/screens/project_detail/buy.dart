@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/extensions/string_extension.dart';
 import 'package:portfolio_manager/utils/custom_text_styles.dart';
+import 'package:portfolio_manager/utils/number_formatter.dart';
 import 'package:portfolio_manager/widgets/date.dart';
+import 'package:portfolio_manager/widgets/money_usd.dart';
 
 class Buy extends StatelessWidget {
   final Transaction transaction;
@@ -38,7 +40,7 @@ class Buy extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Cost basis', style: CustomTextStyles.rowHeader),
-                  Text('${transaction.costs}')
+                  MoneyUsd(transaction.costs)
                 ],
               ),
             ),
@@ -47,7 +49,7 @@ class Buy extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Price per unit', style: CustomTextStyles.rowHeader),
-                  Text('${transaction.pricePerUnit}')
+                  MoneyUsd(transaction.pricePerUnit)
                 ],
               ),
             ),
@@ -69,7 +71,7 @@ class Buy extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Fiat Fee', style: CustomTextStyles.rowHeader),
-                  Text('${transaction.fiatFee}')
+                  MoneyUsd(transaction.fiatFee)
                 ],
               ),
             ),

@@ -111,8 +111,8 @@ class _TransactionPageState extends State<TransactionPage> {
                         const SizedBox(height: 5.0),
                         FormBuilderTextField(
                           name: 'amount',
-                          decoration: const InputDecoration(
-                            labelText: 'Amount of coins'
+                          decoration: InputDecoration(
+                            labelText: 'Amount of ${widget.project.coin} coins'
                           ),
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter(allowNegative: false)
@@ -127,7 +127,7 @@ class _TransactionPageState extends State<TransactionPage> {
                         FormBuilderTextField(
                           name: 'value',
                           decoration: const InputDecoration(
-                            labelText: 'Total value'
+                            labelText: 'Total USD value'
                           ),
                           inputFormatters: <TextInputFormatter>[
                             DecimalsFormatter(allowNegative: false)
