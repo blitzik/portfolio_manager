@@ -29,6 +29,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
         Project(
           name: event.name,
           coin: event.coin,
+          scale: event.scale,
           amount: Decimal.zero,
           currentCosts: Decimal.zero,
           realizedPnl: Decimal.zero

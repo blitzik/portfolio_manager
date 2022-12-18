@@ -15,6 +15,7 @@ import 'package:auto_route/auto_route.dart' as _i5;
 import 'package:flutter/material.dart' as _i6;
 
 import '../domain/project.dart' as _i7;
+import '../domain/transaction.dart' as _i8;
 import '../screens/homepage/home_page.dart' as _i1;
 import '../screens/project/project_page.dart' as _i2;
 import '../screens/project_detail/project_detail_page.dart' as _i3;
@@ -78,6 +79,8 @@ class Router extends _i5.RootStackRouter {
             child: _i4.TransactionPage(
           args.project,
           key: args.key,
+          transaction: args.transaction,
+          onTransactionSaved: args.onTransactionSaved,
         )),
         transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
         durationInMilliseconds: 100,
@@ -200,12 +203,16 @@ class TransactionRoute extends _i5.PageRouteInfo<TransactionRouteArgs> {
   TransactionRoute({
     required _i7.Project project,
     _i6.Key? key,
+    _i8.Transaction? transaction,
+    dynamic Function(_i8.Transaction)? onTransactionSaved,
   }) : super(
           TransactionRoute.name,
           path: '/transaction-page',
           args: TransactionRouteArgs(
             project: project,
             key: key,
+            transaction: transaction,
+            onTransactionSaved: onTransactionSaved,
           ),
         );
 
@@ -216,14 +223,20 @@ class TransactionRouteArgs {
   const TransactionRouteArgs({
     required this.project,
     this.key,
+    this.transaction,
+    this.onTransactionSaved,
   });
 
   final _i7.Project project;
 
   final _i6.Key? key;
 
+  final _i8.Transaction? transaction;
+
+  final dynamic Function(_i8.Transaction)? onTransactionSaved;
+
   @override
   String toString() {
-    return 'TransactionRouteArgs{project: $project, key: $key}';
+    return 'TransactionRouteArgs{project: $project, key: $key, transaction: $transaction, onTransactionSaved: $onTransactionSaved}';
   }
 }

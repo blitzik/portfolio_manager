@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
+import 'package:money2/money2.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/drift/database.dart';
 import 'package:portfolio_manager/utils/result_object.dart';
@@ -40,5 +41,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     }
 
     emit(HomePageLoadSuccess(loadingProjects.value!.toList(growable: false)));
+  }
+
+  String _pattern(int scale) {
+    String s = '#,##0.';
+    String dec = ''.padRight(scale, '0');
+    return s + dec;
   }
 }

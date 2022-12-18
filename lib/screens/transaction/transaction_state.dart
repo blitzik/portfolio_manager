@@ -8,3 +8,9 @@ class TransactionInitial extends TransactionState {
 
   TransactionInitial(this.project);
 }
+
+class TransactionSavedSuccessfully extends TransactionInitial {
+  final Transaction transaction;
+
+  TransactionSavedSuccessfully(super.project, this.transaction);
+}

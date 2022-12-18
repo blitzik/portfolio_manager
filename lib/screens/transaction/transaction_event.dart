@@ -4,6 +4,7 @@ part of 'transaction_bloc.dart';
 abstract class TransactionEvent {}
 
 class TransactionSaved extends TransactionEvent {
+  final int? id;
   final TransactionType type;
   final DateTime date;
   final Project project;
@@ -14,6 +15,7 @@ class TransactionSaved extends TransactionEvent {
   final String? note;
 
   TransactionSaved({
+    this.id,
     required this.date,
     required this.type,
     required this.project,

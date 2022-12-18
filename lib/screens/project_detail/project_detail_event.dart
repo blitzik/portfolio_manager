@@ -4,5 +4,13 @@ part of 'project_detail_bloc.dart';
 abstract class ProjectDetailEvent {}
 
 class ProjectDetailTransactionsLoaded extends ProjectDetailEvent {
-  ProjectDetailTransactionsLoaded();
+  final Project project;
+
+  ProjectDetailTransactionsLoaded(this.project);
+}
+
+class ProjectDetailTransactionDeleted extends ProjectDetailEvent {
+  final Transaction transaction;
+
+  ProjectDetailTransactionDeleted(this.transaction);
 }

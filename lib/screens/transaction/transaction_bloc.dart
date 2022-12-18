@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/drift/database.dart';
+import 'package:portfolio_manager/utils/result_object.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
@@ -38,6 +39,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     switch (event.type) {
       case TransactionType.deposit:
         tx = Transaction.deposit(
+          id: event.id,
           date: event.date,
           project: event.project,
           amount: event.amount,
@@ -48,6 +50,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         break;
       case TransactionType.withdrawal:
         tx = Transaction.withdrawal(
+          id: event.id,
           date: event.date,
           project: event.project,
           amount: event.amount,
@@ -58,6 +61,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         break;
       case TransactionType.buy:
         tx = Transaction.purchase(
+          id: event.id,
           date: event.date,
           project: event.project,
           amount: event.amount,
@@ -68,6 +72,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         break;
       case TransactionType.sell:
         tx = Transaction.sale(
+          id: event.id,
           date: event.date,
           project: event.project,
           amount: event.amount,
@@ -78,6 +83,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         break;
       case TransactionType.transfer:
         tx = Transaction.transfer(
+          id: event.id,
           date: event.date,
           project: event.project,
           amount: event.amount,
@@ -88,6 +94,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         break;
     }
 
-    final result = await _db.transactionsDao.save(tx);
+    ResultObject<Transaction> saving = await _db.transactionsDao.save(tx);
+    if (saving.isSuccess) {
+      Transaction tx = saving.value!;
+      emit(TransactionSavedSuccessfully(tx.project, tx));
+    }
   }
 }

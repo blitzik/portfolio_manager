@@ -16,6 +16,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
     ProjectsCompanion p = ProjectsCompanion(
       name: Value<String>(project.name),
       coin: Value<String>(project.coin),
+      scale: Value<int>(project.scale),
       currentAmount: Value<Decimal>(project.amount),
       realizedPnl: Value<Decimal>(project.realizedPnl)
     );
@@ -34,6 +35,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         Project(
           name: dto.name,
           coin: dto.coin,
+          scale: dto.scale,
           amount: dto.currentAmount,
           currentCosts: dto.currentCosts,
           realizedPnl: dto.realizedPnl,
@@ -61,6 +63,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         return Project(
           name: row.name,
           coin: row.coin,
+          scale: row.scale,
           amount: row.currentAmount,
           currentCosts: row.currentCosts,
           realizedPnl: row.realizedPnl,

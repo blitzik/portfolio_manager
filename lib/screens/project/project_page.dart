@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/screens/project/project_bloc.dart';
@@ -34,7 +36,7 @@ class _ProjectPageState extends State<ProjectPage> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   final GlobalKey<TitleBarState> _titleBarKey = GlobalKey();
 
-  _ProjectPageFormState _projectPageFormState = _ProjectPageFormState(name: "", coin: "");
+  _ProjectPageFormState _projectPageFormState = _ProjectPageFormState(name: "", coin: "", scale: 2);
 
   @override
   void initState() {
@@ -98,12 +100,7 @@ class _ProjectPageState extends State<ProjectPage> {
                           decoration: const InputDecoration(
                               labelText: "Project name"
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter project name";
-                            }
-                            return null;
-                          },
+                          validator: FormBuilderValidators.required(errorText: 'Please enter project name'),
                           onSaved: (value) {
                             _projectPageFormState = _projectPageFormState.copyWith(name: value);
                           },
@@ -114,14 +111,25 @@ class _ProjectPageState extends State<ProjectPage> {
                           decoration: const InputDecoration(
                             labelText: "Coin name"
                           ),
-                          validator: (string) {
-                            if (string == null || string.isEmpty) {
-                              return "Please enter coin name";
-                            }
-                            return null;
-                          },
+                          validator: FormBuilderValidators.required(errorText: 'Please enter coin name'),
                           onSaved: (value) {
                             _projectPageFormState = _projectPageFormState.copyWith(coin: value);
+                          },
+                        ),
+                        const SizedBox(height: 10.0),
+                        FormBuilderTextField(
+                          name: 'scale',
+                          decoration: const InputDecoration(
+                            labelText: "Number of decimal places"
+                          ),
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(errorText: 'Please enter the number of decimals')
+                          ]),
+                          onSaved: (val) {
+                            _projectPageFormState = _projectPageFormState.copyWith(scale: int.parse(val!));
                           },
                         ),
                         const SizedBox(height: 10.0),
@@ -134,6 +142,7 @@ class _ProjectPageState extends State<ProjectPage> {
                                 ProjectSaveClicked(
                                   name: _projectPageFormState.name,
                                   coin: _projectPageFormState.coin,
+                                  scale: _projectPageFormState.scale,
                                   project: widget.project
                                 )
                               );
@@ -157,19 +166,23 @@ class _ProjectPageState extends State<ProjectPage> {
 class _ProjectPageFormState {
   final String name;
   final String coin;
+  final int scale;
 
   _ProjectPageFormState({
     required this.name,
-    required this.coin
+    required this.coin,
+    required this.scale
   });
 
   _ProjectPageFormState copyWith({
     String? name,
-    String? coin
+    String? coin,
+    int? scale
   }) {
     return _ProjectPageFormState(
       name: name ?? this.name,
-      coin: coin ?? this.coin
+      coin: coin ?? this.coin,
+      scale: scale ?? this.scale
     );
   }
 

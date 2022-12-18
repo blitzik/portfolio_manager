@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
+import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/project_detail/project_detail_bloc.dart';
 import 'package:portfolio_manager/screens/project_detail/transaction_item.dart';
-import 'package:portfolio_manager/utils/number_formatter.dart';
 import 'package:portfolio_manager/utils/custom_text_styles.dart';
 import 'package:portfolio_manager/widgets/default_padding.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
@@ -24,7 +24,7 @@ class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context  ) {
     return BlocProvider(
-      create: (context) => getIt<ProjectDetailBlocFactory>().create(project)..add(ProjectDetailTransactionsLoaded()),
+      create: (context) => getIt<ProjectDetailBlocFactory>().create(project)..add(ProjectDetailTransactionsLoaded(project)),
       child: this,
     );
   }
@@ -61,7 +61,14 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
               TextButton(
                 child: const Text("Add transaction"),
                 onPressed: () {
-                  AutoRouter.of(context).push(TransactionRoute(project: widget.project));
+                  AutoRouter.of(context).push(
+                    TransactionRoute(
+                      project: widget.project,
+                      onTransactionSaved: (Transaction tx) {
+                        _projectDetailBloc.add(ProjectDetailTransactionsLoaded(tx.project));
+                      }
+                    )
+                  );
                 },
               )
             ]
@@ -70,33 +77,43 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
             child: DefaultPadding(
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const Text('Current holdings', style: CustomTextStyles.rowHeader),
-                            Text('${widget.project.amount}'),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const Text('Current holdings cost', style: CustomTextStyles.rowHeader),
-                            MoneyUsd(widget.project.currentCosts)
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const Text('Gross realized P/L', style: CustomTextStyles.rowHeader),
-                            MoneyUsd(widget.project.realizedPnl, isColored: true,)
-                          ],
-                        ),
-                      )
-                    ],
+                  BlocBuilder<ProjectDetailBloc, ProjectDetailState>(
+                    builder: (context, state) {
+                      if (state is ProjectDetailLoadInProgress) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text('Current holdings', style: CustomTextStyles.rowHeader),
+                                Text('${state.project.amount} ${widget.project.coin}'),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text('Current holdings cost', style: CustomTextStyles.rowHeader),
+                                MoneyUsd(state.project.currentCosts)
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text('Gross realized P/L', style: CustomTextStyles.rowHeader),
+                                MoneyUsd(state.project.realizedPnl, isColored: true,)
+                              ],
+                            ),
+                          )
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 50.0,),
                   const Text('Transactions'),
@@ -121,7 +138,64 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                           itemCount: txs.length,
                           itemBuilder: (context, index) {
                             final tx = txs[index];
-                            return TransactionItem(transaction: tx);
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    child: TransactionItem(transaction: tx),
+                                    onTap: () async{
+                                      AutoRouter.of(context).push(
+                                        TransactionRoute(
+                                          project: widget.project,
+                                          transaction: tx
+                                        )
+                                      );
+                                    },
+                                  ),
+                                ),
+                                TextButton(
+                                  child: const Icon(Icons.delete),
+                                  onPressed: () async{
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return SimpleDialog(
+                                          contentPadding: const EdgeInsets.all(20.0),
+                                          children: [
+                                            Text('Do you really wish to delete this record?'),
+                                            const SizedBox(height: 35.0,),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                                SizedBox(
+                                                  width: 150.0,
+                                                  child: TextButton(
+                                                      child: const Text('No'),
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      }
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 75.0,
+                                                  child: TextButton(
+                                                    child: const Text('Yes'),
+                                                      onPressed: () {
+                                                        _projectDetailBloc.add(ProjectDetailTransactionDeleted(tx));
+                                                        Navigator.of(context).pop();
+                                                      }
+                                                  ),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        );
+                                      }
+                                    );
+                                  },
+                                )
+                              ],
+                            );
                           }
                         );
                       },

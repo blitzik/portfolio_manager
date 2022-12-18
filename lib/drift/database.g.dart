@@ -11,6 +11,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
   final int id;
   final String name;
   final String coin;
+  final int scale;
   final Decimal currentAmount;
   final Decimal realizedPnl;
   final Decimal currentCosts;
@@ -18,6 +19,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       {required this.id,
       required this.name,
       required this.coin,
+      required this.scale,
       required this.currentAmount,
       required this.realizedPnl,
       required this.currentCosts});
@@ -27,6 +29,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['coin'] = Variable<String>(coin);
+    map['scale'] = Variable<int>(scale);
     {
       final converter = $ProjectsTable.$converter0;
       map['current_amount'] = Variable<String>(converter.toSql(currentAmount));
@@ -47,6 +50,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       id: Value(id),
       name: Value(name),
       coin: Value(coin),
+      scale: Value(scale),
       currentAmount: Value(currentAmount),
       realizedPnl: Value(realizedPnl),
       currentCosts: Value(currentCosts),
@@ -60,6 +64,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       coin: serializer.fromJson<String>(json['coin']),
+      scale: serializer.fromJson<int>(json['scale']),
       currentAmount: serializer.fromJson<Decimal>(json['currentAmount']),
       realizedPnl: serializer.fromJson<Decimal>(json['realizedPnl']),
       currentCosts: serializer.fromJson<Decimal>(json['currentCosts']),
@@ -72,6 +77,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'coin': serializer.toJson<String>(coin),
+      'scale': serializer.toJson<int>(scale),
       'currentAmount': serializer.toJson<Decimal>(currentAmount),
       'realizedPnl': serializer.toJson<Decimal>(realizedPnl),
       'currentCosts': serializer.toJson<Decimal>(currentCosts),
@@ -82,6 +88,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           {int? id,
           String? name,
           String? coin,
+          int? scale,
           Decimal? currentAmount,
           Decimal? realizedPnl,
           Decimal? currentCosts}) =>
@@ -89,6 +96,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
         id: id ?? this.id,
         name: name ?? this.name,
         coin: coin ?? this.coin,
+        scale: scale ?? this.scale,
         currentAmount: currentAmount ?? this.currentAmount,
         realizedPnl: realizedPnl ?? this.realizedPnl,
         currentCosts: currentCosts ?? this.currentCosts,
@@ -99,6 +107,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('coin: $coin, ')
+          ..write('scale: $scale, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('realizedPnl: $realizedPnl, ')
           ..write('currentCosts: $currentCosts')
@@ -107,8 +116,8 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, coin, currentAmount, realizedPnl, currentCosts);
+  int get hashCode => Object.hash(
+      id, name, coin, scale, currentAmount, realizedPnl, currentCosts);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -116,6 +125,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           other.id == this.id &&
           other.name == this.name &&
           other.coin == this.coin &&
+          other.scale == this.scale &&
           other.currentAmount == this.currentAmount &&
           other.realizedPnl == this.realizedPnl &&
           other.currentCosts == this.currentCosts);
@@ -125,6 +135,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> coin;
+  final Value<int> scale;
   final Value<Decimal> currentAmount;
   final Value<Decimal> realizedPnl;
   final Value<Decimal> currentCosts;
@@ -132,6 +143,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.coin = const Value.absent(),
+    this.scale = const Value.absent(),
     this.currentAmount = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.currentCosts = const Value.absent(),
@@ -140,15 +152,18 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.id = const Value.absent(),
     required String name,
     required String coin,
+    required int scale,
     this.currentAmount = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.currentCosts = const Value.absent(),
   })  : name = Value(name),
-        coin = Value(coin);
+        coin = Value(coin),
+        scale = Value(scale);
   static Insertable<ProjectDTO> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? coin,
+    Expression<int>? scale,
     Expression<String>? currentAmount,
     Expression<String>? realizedPnl,
     Expression<String>? currentCosts,
@@ -157,6 +172,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (coin != null) 'coin': coin,
+      if (scale != null) 'scale': scale,
       if (currentAmount != null) 'current_amount': currentAmount,
       if (realizedPnl != null) 'realized_pnl': realizedPnl,
       if (currentCosts != null) 'current_costs': currentCosts,
@@ -167,6 +183,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       {Value<int>? id,
       Value<String>? name,
       Value<String>? coin,
+      Value<int>? scale,
       Value<Decimal>? currentAmount,
       Value<Decimal>? realizedPnl,
       Value<Decimal>? currentCosts}) {
@@ -174,6 +191,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       id: id ?? this.id,
       name: name ?? this.name,
       coin: coin ?? this.coin,
+      scale: scale ?? this.scale,
       currentAmount: currentAmount ?? this.currentAmount,
       realizedPnl: realizedPnl ?? this.realizedPnl,
       currentCosts: currentCosts ?? this.currentCosts,
@@ -191,6 +209,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     }
     if (coin.present) {
       map['coin'] = Variable<String>(coin.value);
+    }
+    if (scale.present) {
+      map['scale'] = Variable<int>(scale.value);
     }
     if (currentAmount.present) {
       final converter = $ProjectsTable.$converter0;
@@ -216,6 +237,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('coin: $coin, ')
+          ..write('scale: $scale, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('realizedPnl: $realizedPnl, ')
           ..write('currentCosts: $currentCosts')
@@ -251,6 +273,11 @@ class $ProjectsTable extends Projects
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'UNIQUE NOT NULL');
+  final VerificationMeta _scaleMeta = const VerificationMeta('scale');
+  @override
+  late final GeneratedColumn<int> scale = GeneratedColumn<int>(
+      'scale', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _currentAmountMeta =
       const VerificationMeta('currentAmount');
   @override
@@ -280,7 +307,7 @@ class $ProjectsTable extends Projects
           .withConverter<Decimal>($ProjectsTable.$converter2);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, coin, currentAmount, realizedPnl, currentCosts];
+      [id, name, coin, scale, currentAmount, realizedPnl, currentCosts];
   @override
   String get aliasedName => _alias ?? 'projects';
   @override
@@ -305,6 +332,12 @@ class $ProjectsTable extends Projects
     } else if (isInserting) {
       context.missing(_coinMeta);
     }
+    if (data.containsKey('scale')) {
+      context.handle(
+          _scaleMeta, scale.isAcceptableOrUnknown(data['scale']!, _scaleMeta));
+    } else if (isInserting) {
+      context.missing(_scaleMeta);
+    }
     context.handle(_currentAmountMeta, const VerificationResult.success());
     context.handle(_realizedPnlMeta, const VerificationResult.success());
     context.handle(_currentCostsMeta, const VerificationResult.success());
@@ -323,6 +356,8 @@ class $ProjectsTable extends Projects
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       coin: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}coin'])!,
+      scale: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}scale'])!,
       currentAmount: $ProjectsTable.$converter0.fromSql(
           attachedDatabase.options.types.read(
               DriftSqlType.string, data['${effectivePrefix}current_amount'])!),

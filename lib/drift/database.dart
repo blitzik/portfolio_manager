@@ -36,6 +36,7 @@ class Projects extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().customConstraint("UNIQUE NOT NULL")();
   TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
+  IntColumn get scale => integer()();
   TextColumn get currentAmount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
   TextColumn get currentCosts => text().map(decimalConverter).withDefault(const Constant("0.0"))();

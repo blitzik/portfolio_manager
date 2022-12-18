@@ -12,10 +12,21 @@ import 'package:portfolio_manager/screens/transaction/transaction_bloc.dart';
 import 'package:portfolio_manager/utils/text_input_formatters/decimals_formatter.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
+typedef OnTransactionSaved = Function(Transaction transaction);
+
 class TransactionPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
+  final Transaction? transaction;
+  final OnTransactionSaved? onTransactionSaved;
 
-  const TransactionPage(this.project, {Key? key}) : super(key: key);
+  const TransactionPage(
+    this.project,
+    {
+      Key? key,
+      this.transaction,
+      this.onTransactionSaved
+    }
+  ) : super(key: key);
 
   @override
   State<TransactionPage> createState() => _TransactionPageState();
@@ -32,13 +43,34 @@ class TransactionPage extends StatefulWidget implements AutoRouteWrapper {
 class _TransactionPageState extends State<TransactionPage> {
   late final TransactionBloc _bloc;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
-  TransactionType _selectedType = TransactionType.buy;
-
+  late _TransactionFormState _formState;
 
   @override
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<TransactionBloc>(context);
+    _formState = _TransactionFormState(
+        type: TransactionType.buy.index,
+        date: DateTime.now(),
+        amount: '',
+        value: '',
+        fee: '0.0',
+        fiatFee: '0.0',
+        note: null
+    );
+    if (widget.transaction != null) {
+      Transaction tx = widget.transaction!;
+      _formState = _TransactionFormState(
+        id: tx.id,
+        type: tx.type.index,
+        date: tx.date,
+        amount: tx.amount.toString(),
+        value: tx.value.toString(),
+        fee: tx.fee.toString(),
+        fiatFee: tx.fiatFee.toString(),
+        note: tx.note
+      );
+    }
   }
 
 
@@ -52,7 +84,8 @@ class _TransactionPageState extends State<TransactionPage> {
   FormBuilderDropdown _buildDropDown() {
     return FormBuilderDropdown(
         name: 'type',
-        initialValue: TransactionType.buy.index,
+        enabled: widget.transaction == null,
+        initialValue: _formState.type,
         decoration: const InputDecoration(
             labelText: 'Transaction type'
         ),
@@ -77,156 +110,206 @@ class _TransactionPageState extends State<TransactionPage> {
               value: TransactionType.transfer.index,
               child: const Text('Transfer')
           ),
-        ]
+        ],
+      onSaved: (val) {
+        _formState = _formState.copyWith(type: val);
+      },
     );
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          TitleBar(
-            title: '${widget.project.name} transaction',
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  FormBuilder(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildDropDown(),
-                        const SizedBox(height: 5.0),
-                        FormBuilderDateTimePicker(
-                          name: 'date_time',
-                          initialValue: DateTime.now(),
-                          decoration: const InputDecoration(
-                            labelText: 'Date and Time'
+    return BlocListener<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        if (state is TransactionSavedSuccessfully) {
+          widget.onTransactionSaved?.call(state.transaction);
+        }
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            TitleBar(
+              title: '${widget.project.name} transaction',
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    FormBuilder(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          _buildDropDown(),
+                          const SizedBox(height: 5.0),
+                          FormBuilderDateTimePicker(
+                            name: 'date_time',
+                            initialValue: _formState.date,
+                            decoration: const InputDecoration(
+                              labelText: 'Date and Time'
+                            ),
+                            onSaved: (val) {
+                              _formState = _formState.copyWith(date: val);
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        FormBuilderTextField(
-                          name: 'amount',
-                          decoration: InputDecoration(
-                            labelText: 'Amount of ${widget.project.coin} coins'
+                          const SizedBox(height: 5.0),
+                          FormBuilderTextField(
+                            name: 'amount',
+                            initialValue: _formState.amount,
+                            decoration: InputDecoration(
+                              labelText: 'Amount of ${widget.project.coin} coins'
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              DecimalsFormatter(allowNegative: false)
+                            ],
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(errorText: 'Please enter the amount'),
+                              FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                            ]),
+                            onSaved: (val) {
+                              _formState = _formState.copyWith(amount: val);
+                            },
                           ),
-                          inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter(allowNegative: false)
-                          ],
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(errorText: 'Please enter the amount'),
-                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ]),
-                          //onChanged: _onChanged,
-                        ),
-                        const SizedBox(height: 5.0),
-                        FormBuilderTextField(
-                          name: 'value',
-                          decoration: const InputDecoration(
-                            labelText: 'Total USD value'
+                          const SizedBox(height: 5.0),
+                          FormBuilderTextField(
+                            name: 'value',
+                            initialValue: _formState.value,
+                            decoration: const InputDecoration(
+                              labelText: 'Total USD value'
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              DecimalsFormatter(allowNegative: false)
+                            ],
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(errorText: 'Please enter the value'),
+                              FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                            ]),
+                           onSaved: (val) {
+                              _formState = _formState.copyWith(value: val);
+                           },
+                           //onChanged: _onChanged
                           ),
-                          inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter(allowNegative: false)
-                          ],
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(errorText: 'Please enter the value'),
-                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ]),
-                         //onChanged: _onChanged
-                        ),
-                        const SizedBox(height: 5.0),
-                        FormBuilderTextField(
-                          name: 'fee',
-                          decoration: InputDecoration(
-                            labelText: 'Fee [${widget.project.coin}]'
+                          const SizedBox(height: 5.0),
+                          FormBuilderTextField(
+                            name: 'fee',
+                            initialValue: _formState.fee,
+                            decoration: InputDecoration(
+                              labelText: 'Fee [${widget.project.coin}]'
+                            ),
+                            //onChanged: _onChanged,
+                            inputFormatters: <TextInputFormatter>[
+                              DecimalsFormatter(allowNegative: false)
+                            ],
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(errorText: 'Please enter the fee'),
+                              FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                            ]),
+                            onSaved: (val) {
+                              _formState = _formState.copyWith(fee: val);
+                            },
                           ),
-                          initialValue: '0.0',
-                          //onChanged: _onChanged,
-                          inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter(allowNegative: false)
-                          ],
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(errorText: 'Please enter the fee'),
-                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ])
-                        ),
-                        FormBuilderTextField(
-                          name: 'fiat_fee',
-                          decoration: const InputDecoration(
-                              labelText: 'Fiat Fee [USD]'
+                          FormBuilderTextField(
+                            name: 'fiat_fee',
+                            initialValue: _formState.fiatFee,
+                            decoration: const InputDecoration(
+                                labelText: 'Fiat Fee [USD]'
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              DecimalsFormatter(allowNegative: false)
+                            ],
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(errorText: 'Please enter the fiat fee'),
+                              FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                            ]),
+                            onSaved: (val) {
+                              _formState = _formState.copyWith(fiatFee: val);
+                            },
                           ),
-                          initialValue: '0.0',
-                          inputFormatters: <TextInputFormatter>[
-                            DecimalsFormatter(allowNegative: false)
-                          ],
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(errorText: 'Please enter the fiat fee'),
-                            FormBuilderValidators.numeric(errorText: 'Please enter a number')
-                          ])
-                        ),
-                        const SizedBox(height: 5.0),
-                        FormBuilderTextField(
-                          name: 'note',
-                          decoration: const InputDecoration(
-                            labelText: 'Note'
+                          const SizedBox(height: 5.0),
+                          FormBuilderTextField(
+                            name: 'note',
+                            initialValue: _formState.note,
+                            decoration: const InputDecoration(
+                              labelText: 'Note'
+                            ),
+                            onSaved: (val) {
+                              _formState = _formState.copyWith(note: val);
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        ElevatedButton(
-                          child: const Text('Save transaction', style: TextStyle(fontSize: 18.0),),
-                          onPressed: () {
-                            if (!_formKey.currentState!.saveAndValidate()) return;
-                            Map<String, dynamic> result = _formKey.currentState!.value;
-                            _bloc.add(
-                              TransactionSaved(
-                                project: widget.project,
-                                date: result['date_time'],
-                                type: TransactionType.values[result['type']],
-                                amount: Decimal.parse(result['amount']),
-                                totalValue: Decimal.parse(result['value']),
-                                fee: Decimal.parse(result['fee']),
-                                fiatFee: Decimal.parse(result['fiat_fee']),
-                                note: result['note']
-                              )
-                            );
-                          },
-                        )
-                      ],
+                          const SizedBox(height: 5.0),
+                          ElevatedButton(
+                            child: const Text('Save transaction', style: TextStyle(fontSize: 18.0),),
+                            onPressed: () {
+                              if (!_formKey.currentState!.saveAndValidate()) return;
+                              _bloc.add(
+                                TransactionSaved(
+                                  id: _formState.id,
+                                  project: widget.project,
+                                  date: _formState.date,
+                                  type: TransactionType.values[_formState.type],
+                                  amount: Decimal.parse(_formState.amount),
+                                  totalValue: Decimal.parse(_formState.value),
+                                  fee: Decimal.parse(_formState.fee),
+                                  fiatFee: Decimal.parse(_formState.fiatFee),
+                                  note: _formState.note
+                                )
+                              );
+                            },
+                          )
+                        ],
+                      )
                     )
-                  )
-                ],
-              ),
+                  ],
+                ),
+              )
             )
-          )
-        ],
-      )
+          ],
+        )
+      ),
     );
   }
+}
 
-  /*void _onChanged(String? val) {
-    if (val == null || val.isEmpty) {
-      _formKey.currentState!.fields['fiat_fee']?.didChange('0.0');
-      return;
-    }
-    final valueFieldVal = _formKey.currentState!.fields['value']!.value;
-    final amountFieldVal = _formKey.currentState!.fields['amount']!.value;
-    if (valueFieldVal == null || amountFieldVal == null) return;
+class _TransactionFormState {
+  final int? id;
+  final int type;
+  final DateTime date;
+  final String amount;
+  final String value;
+  final String fee;
+  final String fiatFee;
+  final String? note;
 
-    final amount = Decimal.parse(amountFieldVal);
-    if (amount == Decimal.zero) return;
+  _TransactionFormState({
+    this.id,
+    required this.type,
+    required this.date,
+    required this.amount,
+    required this.value,
+    required this.fee,
+    required this.fiatFee,
+    this.note
+  });
 
-    final value = Decimal.parse(valueFieldVal);
-    final fee = Decimal.parse(_formKey.currentState!.fields['fee']!.value);
-    if (fee == Decimal.zero) {
-      _formKey.currentState!.fields['fiat_fee']?.didChange('0.0');
-      return;
-    }
-
-    final ppc = (value / amount).toDecimal(scaleOnInfinitePrecision: 12);
-    _formKey.currentState!.fields['fiat_fee']?.didChange((ppc * fee).toString());
-  }*/
+  _TransactionFormState copyWith({
+    int? type,
+    DateTime? date,
+    String? amount,
+    String? value,
+    String? fee,
+    String? fiatFee,
+    String? note,
+  }) {
+    return _TransactionFormState(
+      id: id,
+      type: type ?? this.type,
+      date: date ?? this.date,
+      amount: amount ?? this.amount,
+      value: value ?? this.value,
+      fee: fee ?? this.fee,
+      fiatFee: fiatFee ?? this.fiatFee,
+      note: note
+    );
+  }
 }
