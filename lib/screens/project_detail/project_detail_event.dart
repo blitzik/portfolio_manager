@@ -5,8 +5,9 @@ abstract class ProjectDetailEvent {}
 
 class ProjectDetailTransactionsLoaded extends ProjectDetailEvent {
   final Project project;
+  final String? error;
 
-  ProjectDetailTransactionsLoaded(this.project);
+  ProjectDetailTransactionsLoaded(this.project, {this.error});
 }
 
 class ProjectDetailTransactionDeleted extends ProjectDetailEvent {

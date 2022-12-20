@@ -55,6 +55,60 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
   }
 
 
+  Future<ResultObject<Project>> getProjectById(int id) async{
+    ResultObject<Project> result = ResultObject();
+    try {
+      final pq = select(projects);
+      pq.where((tbl) => tbl.id.equals(id));
+      ProjectDTO p = await pq.getSingle();
+
+      result = ResultObject(
+        Project(
+          name: p.name,
+          coin: p.coin,
+          scale: p.scale,
+          amount: p.currentAmount,
+          currentCosts: p.currentCosts,
+          realizedPnl: p.realizedPnl
+        )
+      );
+
+    } on SqliteException catch (e) {
+      result.addErrorMessage('An error occurred while loading the project');
+    }
+
+    return Future.value(result);
+  }
+
+
+  ResultObject<Stream<List<Project>>> watchAllProjects() {
+    ResultObject<Stream<List<Project>>> result = ResultObject();
+
+    try {
+      final s = select(projects).watch().map((rows) {
+        return rows.map((row) {
+          return Project(
+            id:  row.id,
+            name: row.name,
+            coin: row.coin,
+            scale: row.scale,
+            amount: row.currentAmount,
+            currentCosts: row.currentCosts,
+            realizedPnl: row.realizedPnl,
+          );
+        }).toList();
+      });
+
+      result = ResultObject(s);
+
+    } on SqliteException catch (e) {
+      result.addErrorMessage('TODO');
+    }
+
+    return result;
+  }
+
+
   Future<ResultObject<List<Project>>> findAllProjects() async{
     ResultObject<List<Project>> result = ResultObject();
     try {

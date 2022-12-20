@@ -42,10 +42,4 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
     emit(HomePageLoadSuccess(loadingProjects.value!.toList(growable: false)));
   }
-
-  String _pattern(int scale) {
-    String s = '#,##0.';
-    String dec = ''.padRight(scale, '0');
-    return s + dec;
-  }
 }

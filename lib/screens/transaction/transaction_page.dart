@@ -125,6 +125,25 @@ class _TransactionPageState extends State<TransactionPage> {
         if (state is TransactionSavedSuccessfully) {
           widget.onTransactionSaved?.call(state.transaction);
         }
+        if (state is TransactionSaveFailure) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return SimpleDialog(
+                contentPadding: const EdgeInsets.all(20.0),
+                children: [
+                  Text(state.error),
+                  TextButton(
+                    child: const Text('Ok, I understand'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            }
+          );
+        }
       },
       child: Scaffold(
         body: Column(
@@ -165,7 +184,8 @@ class _TransactionPageState extends State<TransactionPage> {
                             ],
                             validator: FormBuilderValidators.compose([
                               FormBuilderValidators.required(errorText: 'Please enter the amount'),
-                              FormBuilderValidators.numeric(errorText: 'Please enter a number')
+                              FormBuilderValidators.numeric(errorText: 'Please enter a number'),
+                              FormBuilderValidators.min(0, inclusive: false, errorText: 'Value must be greater than 0')
                             ]),
                             onSaved: (val) {
                               _formState = _formState.copyWith(amount: val);

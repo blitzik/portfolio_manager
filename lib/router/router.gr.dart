@@ -63,6 +63,7 @@ class Router extends _i5.RootStackRouter {
             child: _i3.ProjectDetailPage(
           args.project,
           key: args.key,
+          onProjectChanged: args.onProjectChanged,
         )),
         transitionsBuilder: _i5.TransitionsBuilders.fadeIn,
         durationInMilliseconds: 100,
@@ -169,12 +170,14 @@ class ProjectDetailRoute extends _i5.PageRouteInfo<ProjectDetailRouteArgs> {
   ProjectDetailRoute({
     required _i7.Project project,
     _i6.Key? key,
+    dynamic Function(_i7.Project)? onProjectChanged,
   }) : super(
           ProjectDetailRoute.name,
           path: '/project-detail-page',
           args: ProjectDetailRouteArgs(
             project: project,
             key: key,
+            onProjectChanged: onProjectChanged,
           ),
         );
 
@@ -185,15 +188,18 @@ class ProjectDetailRouteArgs {
   const ProjectDetailRouteArgs({
     required this.project,
     this.key,
+    this.onProjectChanged,
   });
 
   final _i7.Project project;
 
   final _i6.Key? key;
 
+  final dynamic Function(_i7.Project)? onProjectChanged;
+
   @override
   String toString() {
-    return 'ProjectDetailRouteArgs{project: $project, key: $key}';
+    return 'ProjectDetailRouteArgs{project: $project, key: $key, onProjectChanged: $onProjectChanged}';
   }
 }
 

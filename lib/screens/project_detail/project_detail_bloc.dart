@@ -23,29 +23,35 @@ class ProjectDetailBlocFactory {
 }
 
 class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
+  final int _projectId;
   final Database _db;
 
-  ProjectDetailBloc(this._db, Project project) : super(ProjectDetailLoadInProgress(project)) {
+  ProjectDetailBloc(this._db, Project project) : _projectId = project.id!, super(ProjectDetailLoadInProgress(project)) {
     on<ProjectDetailTransactionsLoaded>(_onTransactionsLoaded);
     on<ProjectDetailTransactionDeleted>(_onTransactionDeleted);
   }
 
   void _onTransactionsLoaded(ProjectDetailTransactionsLoaded event, Emitter<ProjectDetailState> emit) async{
-    emit(ProjectDetailLoadInProgress(event.project));
+    emit(ProjectDetailLoadInProgress(state.project));
 
-    final result = await _db.transactionsDao.findTransactions(event.project.id!);
-    if (result.isSuccess) {
-      emit(ProjectDetailTransactionsLoadedSuccessfully(event.project, result.value ?? []));
+    ResultObject<Project> projectLoading = await _db.projectsDao.getProjectById(_projectId);
+    if (projectLoading.isSuccess) {
+      ResultObject<List<Transaction>> transactionsLoading = await _db.transactionsDao.findTransactions(_projectId);
+      if (transactionsLoading.isSuccess) {
+        emit(ProjectDetailTransactionsLoadedSuccessfully(projectLoading.value!, transactionsLoading.value ?? [], error: event.error));
+      }
     }
   }
 
   void _onTransactionDeleted(ProjectDetailTransactionDeleted event, Emitter<ProjectDetailState> emit) async{
     emit(ProjectDetailLoadInProgress(state.project));
 
-    ResultObject<Project> deletion = await _db.transactionsDao.deleteTransaction(event.transaction);
-
+    //await Future.delayed(Duration(seconds: 3));
+    ResultObject<int> deletion = await _db.transactionsDao.deleteTransaction(event.transaction);
     if (deletion.isSuccess) {
-      add(ProjectDetailTransactionsLoaded(deletion.value!));
+      add(ProjectDetailTransactionsLoaded(state.project));
+    } else {
+      add(ProjectDetailTransactionsLoaded(state.project, error: deletion.lastErrorMessage));
     }
   }
 }

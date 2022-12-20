@@ -101,7 +101,10 @@ class Fifo {
       if (t is Sale) {
         Sale sale = t;
         do {
-          lastProcessedPurchase = _purchases.last; // todo
+          if (_purchases.isEmpty) {
+            throw NotEnoughHoldingsException(0, 'You cannot sell more then you have!');
+          }
+          lastProcessedPurchase = _purchases.last;
           sale.processPurchase(lastProcessedPurchase);
           if (lastProcessedPurchase.amountToSell == Decimal.zero) {
             Purchase p = _purchases.removeLast();
@@ -121,7 +124,7 @@ class Fifo {
         onTradeProcessed?.call(r);
 
         if (_currentAmount < Decimal.zero) {
-          throw Exception('Amount "(${_currentAmount})" cannot be lower than zero!'); // todo
+          throw NotEnoughHoldingsException(0, 'You cannot sell more then you have!');
         }
 
       } else if (t is Purchase) {
@@ -183,4 +186,12 @@ class Fifo {
         fiatFee: t.fiatFee
     );
   }
+}
+
+
+class NotEnoughHoldingsException implements Exception{
+  final int code;
+  final String message;
+
+  NotEnoughHoldingsException(this.code, this.message);
 }

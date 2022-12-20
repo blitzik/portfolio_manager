@@ -98,6 +98,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (saving.isSuccess) {
       Transaction tx = saving.value!;
       emit(TransactionSavedSuccessfully(tx.project, tx));
+    } else {
+      emit(TransactionSaveFailure(event.project, saving.lastErrorMessage));
     }
   }
 }

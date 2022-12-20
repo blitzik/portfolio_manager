@@ -67,34 +67,35 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
 
     } on SqliteException catch(e) {
       result.addErrorMessage('An error occurred while saving the transaction.');
+    } on NotEnoughHoldingsException catch(e) {
+      result.addErrorMessage('Transaction cannot be updated because your holdings would become negative');
     }
 
     return Future.value(result);
   }
 
-  Future<ResultObject<Project>> deleteTransaction(Transaction tx) async{
-    ResultObject<Project> result = ResultObject();
+  Future<ResultObject<int>> deleteTransaction(Transaction tx) async{
+    ResultObject<int> result = ResultObject();
     if (tx.id == null) {
       result.addErrorMessage('Transaction cannot be deleted');
       return result;
     }
 
     try {
-      final dq = delete(transactions);
-      dq.where((tbl) => tbl.id.equals(tx.id!));
-      int affectedRows = await dq.go();
+      result = await transaction(() async{
+        final dq = delete(transactions);
+        dq.where((tbl) => tbl.id.equals(tx.id!));
+        int affectedRows = await dq.go();
 
-      await _processTransactions(tx.project.id!);
+        await _processTransactions(tx.project.id!);
 
-      final pq = select(projects);
-      pq.where((tbl) => tbl.id.equals(tx.project.id!));
-      ProjectDTO pdto = await pq.getSingle();
-
-      result = ResultObject(_mapProject(pdto));
+        return ResultObject(affectedRows);
+      });
 
     } on SqliteException catch(e) {
       result.addErrorMessage('An error occurred while trying to delete the transaction');
-      return result;
+    } on NotEnoughHoldingsException catch (e) {
+      result.addErrorMessage('Transaction cannot be deleted because your holdings would become negative');
     }
 
     return Future.value(result);
