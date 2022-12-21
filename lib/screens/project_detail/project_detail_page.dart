@@ -13,7 +13,7 @@ import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/money_usd.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
-typedef OnProjectChanged = Function(Project project);
+typedef OnProjectChanged = Function();
 
 class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
@@ -33,6 +33,7 @@ class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
     );
   }
 }
+
 
 class _ProjectDetailPageState extends State<ProjectDetailPage> {
   late final ProjectDetailBloc _projectDetailBloc;
@@ -71,6 +72,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                 );
               }
           );
+        } else if (state is ProjectDetailTransactionDeletedSuccessfully) {
+          widget.onProjectChanged?.call();
         }
       },
       child: Scaffold(
@@ -86,6 +89,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                     onTransactionSaved: (Transaction tx) {
                       _projectDetailBloc
                           .add(ProjectDetailTransactionsLoaded(tx.project));
+                      widget.onProjectChanged?.call();
                     }));
               },
             )
@@ -186,6 +190,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                                               _projectDetailBloc.add(
                                                   ProjectDetailTransactionsLoaded(
                                                       tx.project));
+                                              widget.onProjectChanged?.call();
                                             }));
                                   },
                                 ),
@@ -200,7 +205,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                                           contentPadding:
                                               const EdgeInsets.all(20.0),
                                           children: [
-                                            Text(
+                                            const Text(
                                                 'Do you really wish to delete this record?'),
                                             const SizedBox(
                                               height: 35.0,

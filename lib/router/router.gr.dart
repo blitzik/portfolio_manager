@@ -170,7 +170,7 @@ class ProjectDetailRoute extends _i5.PageRouteInfo<ProjectDetailRouteArgs> {
   ProjectDetailRoute({
     required _i7.Project project,
     _i6.Key? key,
-    dynamic Function(_i7.Project)? onProjectChanged,
+    dynamic Function()? onProjectChanged,
   }) : super(
           ProjectDetailRoute.name,
           path: '/project-detail-page',
@@ -195,7 +195,7 @@ class ProjectDetailRouteArgs {
 
   final _i6.Key? key;
 
-  final dynamic Function(_i7.Project)? onProjectChanged;
+  final dynamic Function()? onProjectChanged;
 
   @override
   String toString() {

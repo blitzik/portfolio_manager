@@ -8,7 +8,6 @@ import 'package:portfolio_manager/screens/homepage/home_page_bloc.dart';
 import 'package:portfolio_manager/screens/homepage/project_item.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
-import 'package:portfolio_manager/widgets/title_bar/title_bar_cubit.dart';
 
 class HomePage extends StatefulWidget implements AutoRouteWrapper {
   const HomePage({Key? key}) : super(key: key);
@@ -24,11 +23,8 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
     );
   }
 }
-/*
-AutoRouter.of(context).push(ProjectRoute(onSuccessfullySaved: (project) {
-  BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
-}));
-*/
+
+
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
@@ -110,7 +106,14 @@ class _HomePageState extends State<HomePage> {
                           return InkWell(
                             child: ProjectItem(project),
                             onTap: () {
-                              AutoRouter.of(context).push(ProjectDetailRoute(project: project));
+                              AutoRouter.of(context).push(
+                                ProjectDetailRoute(
+                                  project: project,
+                                  onProjectChanged: () {
+                                    BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
+                                  }
+                                )
+                              );
                             },
                           );
                         },

@@ -38,7 +38,17 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     if (projectLoading.isSuccess) {
       ResultObject<List<Transaction>> transactionsLoading = await _db.transactionsDao.findTransactions(_projectId);
       if (transactionsLoading.isSuccess) {
-        emit(ProjectDetailTransactionsLoadedSuccessfully(projectLoading.value!, transactionsLoading.value ?? [], error: event.error));
+        if (event.transactionDeleted != null && event.transactionDeleted == true) {
+         emit(ProjectDetailTransactionDeletedSuccessfully(
+           projectLoading.value!, transactionsLoading.value ?? [],
+         ));
+
+        } else {
+          emit(ProjectDetailTransactionsLoadedSuccessfully(
+            projectLoading.value!, transactionsLoading.value ?? [],
+            error: event.error
+          ));
+        }
       }
     }
   }
@@ -49,9 +59,9 @@ class ProjectDetailBloc extends Bloc<ProjectDetailEvent, ProjectDetailState> {
     //await Future.delayed(Duration(seconds: 3));
     ResultObject<int> deletion = await _db.transactionsDao.deleteTransaction(event.transaction);
     if (deletion.isSuccess) {
-      add(ProjectDetailTransactionsLoaded(state.project));
+      add(ProjectDetailTransactionsLoaded(state.project, transactionDeleted: true));
     } else {
-      add(ProjectDetailTransactionsLoaded(state.project, error: deletion.lastErrorMessage));
+      add(ProjectDetailTransactionsLoaded(state.project, transactionDeleted: false, error: deletion.lastErrorMessage));
     }
   }
 }
