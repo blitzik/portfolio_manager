@@ -11,6 +11,16 @@ class TransactionInitial extends TransactionState {
   const TransactionInitial(super.project);
 }
 
+class TransactionLoadInProgress extends TransactionState {
+  const TransactionLoadInProgress(super.project);
+}
+
+class TransactionLoadedSuccessfully extends TransactionState {
+  final List<Proceed> proceeds;
+
+  const TransactionLoadedSuccessfully(super.project, this.proceeds);
+}
+
 class TransactionSavedSuccessfully extends TransactionState {
   final Transaction transaction;
 

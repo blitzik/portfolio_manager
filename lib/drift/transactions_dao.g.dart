@@ -9,4 +9,5 @@ part of 'transactions_dao.dart';
 mixin _$TransactionsDaoMixin on DatabaseAccessor<Database> {
   $ProjectsTable get projects => attachedDatabase.projects;
   $TransactionsTable get transactions => attachedDatabase.transactions;
+  $ProceedsTable get proceeds => attachedDatabase.proceeds;
 }

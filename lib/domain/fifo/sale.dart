@@ -51,10 +51,12 @@ class Sale implements Trade {
        pricePerUnit = (profit / amount).toDecimal(scaleOnInfinitePrecision: 12);
 
 
-  void processPurchase(Purchase purchase) {
+  Proceed processPurchase(Purchase purchase) {
     Proceed proceed = purchase.processSale(this);
     _amountToSell -= proceed.amount;
     _costBasis += proceed.costs;
     _grossPNL += proceed.pnl;
+
+    return proceed;
   }
 }

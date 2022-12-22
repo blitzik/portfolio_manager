@@ -3,6 +3,12 @@ part of 'transaction_bloc.dart';
 @immutable
 abstract class TransactionEvent {}
 
+class TransactionLoaded extends TransactionEvent {
+  final Transaction? transaction;
+
+  TransactionLoaded(this.transaction);
+}
+
 class TransactionSaved extends TransactionEvent {
   final int? id;
   final TransactionType type;

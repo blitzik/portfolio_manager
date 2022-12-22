@@ -18,7 +18,11 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
       coin: Value<String>(project.coin),
       scale: Value<int>(project.scale),
       currentAmount: Value<Decimal>(project.amount),
-      realizedPnl: Value<Decimal>(project.realizedPnl)
+      currentCosts: Value<Decimal>(project.currentCosts),
+      realizedPnl: Value<Decimal>(project.realizedPnl),
+      feesPaid: Value<Decimal>(project.feesPaid),
+      fiatFeesPaid: Value<Decimal>(project.fiatFeesPaid),
+      averageCostPerCoin: Value<Decimal>(project.averageCostPerCoin),
     );
 
     try {
@@ -31,17 +35,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         dto = await (select(projects)..where((tbl) => tbl.id.equals(project.id!))).getSingle();
       }
 
-      result = ResultObject(
-        Project(
-          name: dto.name,
-          coin: dto.coin,
-          scale: dto.scale,
-          amount: dto.currentAmount,
-          currentCosts: dto.currentCosts,
-          realizedPnl: dto.realizedPnl,
-          id: dto.id
-        )
-      );
+      result = ResultObject(_mapProject(dto));
 
     } on SqliteException catch(e) {
       if (e.extendedResultCode == 2067) { // UNIQUE CONSTRAINT ERROR CODE
@@ -62,16 +56,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
       pq.where((tbl) => tbl.id.equals(id));
       ProjectDTO p = await pq.getSingle();
 
-      result = ResultObject(
-        Project(
-          name: p.name,
-          coin: p.coin,
-          scale: p.scale,
-          amount: p.currentAmount,
-          currentCosts: p.currentCosts,
-          realizedPnl: p.realizedPnl
-        )
-      );
+      result = ResultObject(_mapProject(p));
 
     } on SqliteException catch (e) {
       result.addErrorMessage('An error occurred while loading the project');
@@ -87,15 +72,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
     try {
       final s = select(projects).watch().map((rows) {
         return rows.map((row) {
-          return Project(
-            id:  row.id,
-            name: row.name,
-            coin: row.coin,
-            scale: row.scale,
-            amount: row.currentAmount,
-            currentCosts: row.currentCosts,
-            realizedPnl: row.realizedPnl,
-          );
+          return _mapProject(row);
         }).toList();
       });
 
@@ -112,17 +89,12 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
   Future<ResultObject<List<Project>>> findAllProjects() async{
     ResultObject<List<Project>> result = ResultObject();
     try {
-      final q = await select(projects).get();
-      result = ResultObject(q.map((row) {
-        return Project(
-          name: row.name,
-          coin: row.coin,
-          scale: row.scale,
-          amount: row.currentAmount,
-          currentCosts: row.currentCosts,
-          realizedPnl: row.realizedPnl,
-          id: row.id
-        );
+      final q = select(projects);
+      q.orderBy([(p) => OrderingTerm.desc(p.currentCosts)]);
+      final qr = await q.get();
+
+      result = ResultObject(qr.map((row) {
+        return _mapProject(row);
       }).toList());
 
     } on SqliteException catch(e) {
@@ -130,5 +102,20 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
     }
 
     return Future.value(result);
+  }
+
+  Project _mapProject(ProjectDTO dto) {
+    return Project(
+        id: dto.id,
+        name: dto.name,
+        coin: dto.coin,
+        scale: dto.scale,
+        amount: dto.currentAmount,
+        currentCosts: dto.currentCosts,
+        realizedPnl: dto.realizedPnl,
+        feesPaid: dto.feesPaid,
+        fiatFeesPaid: dto.fiatFeesPaid,
+        averageCostPerCoin: dto.averageCostPerCoin
+    );
   }
 }

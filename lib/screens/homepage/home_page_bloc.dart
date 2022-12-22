@@ -50,16 +50,19 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     List<Project> projects = loadingProjects.value ?? [];
     Decimal totalCostBasis = Decimal.fromInt(0);
     Decimal totalPNL = Decimal.fromInt(0);
+    Map<String, double> pieData = {};
     for (Project p in projects) {
       totalCostBasis += p.currentCosts;
       totalPNL += p.realizedPnl;
+      pieData[p.coin] = p.amount.toDouble();
     }
 
     emit(
       HomePageLoadSuccess(
         projects: projects.toList(growable: false),
         currentCosts: totalCostBasis,
-        totalRealizedPnl: totalPNL
+        totalRealizedPnl: totalPNL,
+        pieData: pieData
       )
     );
   }

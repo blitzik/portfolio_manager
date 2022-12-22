@@ -13,12 +13,14 @@ class HomePageLoadFailure extends HomePageState {
 
 class HomePageLoadSuccess extends HomePageState {
   final List<Project> projects;
+  final Map<String, double> pieData;
   final Decimal currentCosts;
   final Decimal totalRealizedPnl;
 
   HomePageLoadSuccess({
     required this.projects,
     required this.currentCosts,
-    required this.totalRealizedPnl
+    required this.totalRealizedPnl,
+    required this.pieData
   });
 }

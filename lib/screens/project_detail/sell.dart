@@ -72,7 +72,7 @@ class Sell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Fiat Fee', style: CustomTextStyles.rowHeader,),
-                  Text('${NumberFormatter.formatDecimal(transaction.fiatFee)}')
+                  MoneyUsd(transaction.fiatFee)
                 ],
               ),
             ),

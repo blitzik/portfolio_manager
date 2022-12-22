@@ -117,7 +117,7 @@ class _ProjectPageState extends State<ProjectPage> {
                           },
                         ),
                         const SizedBox(height: 10.0),
-                        FormBuilderTextField(
+                        /*FormBuilderTextField(
                           name: 'scale',
                           decoration: const InputDecoration(
                             labelText: "Number of decimal places"
@@ -132,7 +132,7 @@ class _ProjectPageState extends State<ProjectPage> {
                             _projectPageFormState = _projectPageFormState.copyWith(scale: int.parse(val!));
                           },
                         ),
-                        const SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),*/
                         ElevatedButton(
                           child: Text(widget.project == null ? "Create project" : "Edit project"),
                           onPressed: () {

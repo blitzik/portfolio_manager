@@ -15,6 +15,9 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
   final Decimal currentAmount;
   final Decimal realizedPnl;
   final Decimal currentCosts;
+  final Decimal feesPaid;
+  final Decimal fiatFeesPaid;
+  final Decimal averageCostPerCoin;
   const ProjectDTO(
       {required this.id,
       required this.name,
@@ -22,7 +25,10 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       required this.scale,
       required this.currentAmount,
       required this.realizedPnl,
-      required this.currentCosts});
+      required this.currentCosts,
+      required this.feesPaid,
+      required this.fiatFeesPaid,
+      required this.averageCostPerCoin});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -42,6 +48,19 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       final converter = $ProjectsTable.$converter2;
       map['current_costs'] = Variable<String>(converter.toSql(currentCosts));
     }
+    {
+      final converter = $ProjectsTable.$converter3;
+      map['fees_paid'] = Variable<String>(converter.toSql(feesPaid));
+    }
+    {
+      final converter = $ProjectsTable.$converter4;
+      map['fiat_fees_paid'] = Variable<String>(converter.toSql(fiatFeesPaid));
+    }
+    {
+      final converter = $ProjectsTable.$converter5;
+      map['average_cost_per_coin'] =
+          Variable<String>(converter.toSql(averageCostPerCoin));
+    }
     return map;
   }
 
@@ -54,6 +73,9 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       currentAmount: Value(currentAmount),
       realizedPnl: Value(realizedPnl),
       currentCosts: Value(currentCosts),
+      feesPaid: Value(feesPaid),
+      fiatFeesPaid: Value(fiatFeesPaid),
+      averageCostPerCoin: Value(averageCostPerCoin),
     );
   }
 
@@ -68,6 +90,10 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       currentAmount: serializer.fromJson<Decimal>(json['currentAmount']),
       realizedPnl: serializer.fromJson<Decimal>(json['realizedPnl']),
       currentCosts: serializer.fromJson<Decimal>(json['currentCosts']),
+      feesPaid: serializer.fromJson<Decimal>(json['feesPaid']),
+      fiatFeesPaid: serializer.fromJson<Decimal>(json['fiatFeesPaid']),
+      averageCostPerCoin:
+          serializer.fromJson<Decimal>(json['averageCostPerCoin']),
     );
   }
   @override
@@ -81,6 +107,9 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       'currentAmount': serializer.toJson<Decimal>(currentAmount),
       'realizedPnl': serializer.toJson<Decimal>(realizedPnl),
       'currentCosts': serializer.toJson<Decimal>(currentCosts),
+      'feesPaid': serializer.toJson<Decimal>(feesPaid),
+      'fiatFeesPaid': serializer.toJson<Decimal>(fiatFeesPaid),
+      'averageCostPerCoin': serializer.toJson<Decimal>(averageCostPerCoin),
     };
   }
 
@@ -91,7 +120,10 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           int? scale,
           Decimal? currentAmount,
           Decimal? realizedPnl,
-          Decimal? currentCosts}) =>
+          Decimal? currentCosts,
+          Decimal? feesPaid,
+          Decimal? fiatFeesPaid,
+          Decimal? averageCostPerCoin}) =>
       ProjectDTO(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -100,6 +132,9 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
         currentAmount: currentAmount ?? this.currentAmount,
         realizedPnl: realizedPnl ?? this.realizedPnl,
         currentCosts: currentCosts ?? this.currentCosts,
+        feesPaid: feesPaid ?? this.feesPaid,
+        fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
+        averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin,
       );
   @override
   String toString() {
@@ -110,14 +145,17 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           ..write('scale: $scale, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('realizedPnl: $realizedPnl, ')
-          ..write('currentCosts: $currentCosts')
+          ..write('currentCosts: $currentCosts, ')
+          ..write('feesPaid: $feesPaid, ')
+          ..write('fiatFeesPaid: $fiatFeesPaid, ')
+          ..write('averageCostPerCoin: $averageCostPerCoin')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, coin, scale, currentAmount, realizedPnl, currentCosts);
+  int get hashCode => Object.hash(id, name, coin, scale, currentAmount,
+      realizedPnl, currentCosts, feesPaid, fiatFeesPaid, averageCostPerCoin);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -128,7 +166,10 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           other.scale == this.scale &&
           other.currentAmount == this.currentAmount &&
           other.realizedPnl == this.realizedPnl &&
-          other.currentCosts == this.currentCosts);
+          other.currentCosts == this.currentCosts &&
+          other.feesPaid == this.feesPaid &&
+          other.fiatFeesPaid == this.fiatFeesPaid &&
+          other.averageCostPerCoin == this.averageCostPerCoin);
 }
 
 class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
@@ -139,6 +180,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
   final Value<Decimal> currentAmount;
   final Value<Decimal> realizedPnl;
   final Value<Decimal> currentCosts;
+  final Value<Decimal> feesPaid;
+  final Value<Decimal> fiatFeesPaid;
+  final Value<Decimal> averageCostPerCoin;
   const ProjectsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -147,6 +191,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.currentAmount = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.currentCosts = const Value.absent(),
+    this.feesPaid = const Value.absent(),
+    this.fiatFeesPaid = const Value.absent(),
+    this.averageCostPerCoin = const Value.absent(),
   });
   ProjectsCompanion.insert({
     this.id = const Value.absent(),
@@ -156,6 +203,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.currentAmount = const Value.absent(),
     this.realizedPnl = const Value.absent(),
     this.currentCosts = const Value.absent(),
+    this.feesPaid = const Value.absent(),
+    this.fiatFeesPaid = const Value.absent(),
+    this.averageCostPerCoin = const Value.absent(),
   })  : name = Value(name),
         coin = Value(coin),
         scale = Value(scale);
@@ -167,6 +217,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     Expression<String>? currentAmount,
     Expression<String>? realizedPnl,
     Expression<String>? currentCosts,
+    Expression<String>? feesPaid,
+    Expression<String>? fiatFeesPaid,
+    Expression<String>? averageCostPerCoin,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -176,6 +229,10 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       if (currentAmount != null) 'current_amount': currentAmount,
       if (realizedPnl != null) 'realized_pnl': realizedPnl,
       if (currentCosts != null) 'current_costs': currentCosts,
+      if (feesPaid != null) 'fees_paid': feesPaid,
+      if (fiatFeesPaid != null) 'fiat_fees_paid': fiatFeesPaid,
+      if (averageCostPerCoin != null)
+        'average_cost_per_coin': averageCostPerCoin,
     });
   }
 
@@ -186,7 +243,10 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       Value<int>? scale,
       Value<Decimal>? currentAmount,
       Value<Decimal>? realizedPnl,
-      Value<Decimal>? currentCosts}) {
+      Value<Decimal>? currentCosts,
+      Value<Decimal>? feesPaid,
+      Value<Decimal>? fiatFeesPaid,
+      Value<Decimal>? averageCostPerCoin}) {
     return ProjectsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -195,6 +255,9 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       currentAmount: currentAmount ?? this.currentAmount,
       realizedPnl: realizedPnl ?? this.realizedPnl,
       currentCosts: currentCosts ?? this.currentCosts,
+      feesPaid: feesPaid ?? this.feesPaid,
+      fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
+      averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin,
     );
   }
 
@@ -228,6 +291,20 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       map['current_costs'] =
           Variable<String>(converter.toSql(currentCosts.value));
     }
+    if (feesPaid.present) {
+      final converter = $ProjectsTable.$converter3;
+      map['fees_paid'] = Variable<String>(converter.toSql(feesPaid.value));
+    }
+    if (fiatFeesPaid.present) {
+      final converter = $ProjectsTable.$converter4;
+      map['fiat_fees_paid'] =
+          Variable<String>(converter.toSql(fiatFeesPaid.value));
+    }
+    if (averageCostPerCoin.present) {
+      final converter = $ProjectsTable.$converter5;
+      map['average_cost_per_coin'] =
+          Variable<String>(converter.toSql(averageCostPerCoin.value));
+    }
     return map;
   }
 
@@ -240,7 +317,10 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
           ..write('scale: $scale, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('realizedPnl: $realizedPnl, ')
-          ..write('currentCosts: $currentCosts')
+          ..write('currentCosts: $currentCosts, ')
+          ..write('feesPaid: $feesPaid, ')
+          ..write('fiatFeesPaid: $fiatFeesPaid, ')
+          ..write('averageCostPerCoin: $averageCostPerCoin')
           ..write(')'))
         .toString();
   }
@@ -285,7 +365,7 @@ class $ProjectsTable extends Projects
       GeneratedColumn<String>('current_amount', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($ProjectsTable.$converter0);
   final VerificationMeta _realizedPnlMeta =
       const VerificationMeta('realizedPnl');
@@ -294,7 +374,7 @@ class $ProjectsTable extends Projects
       GeneratedColumn<String>('realized_pnl', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($ProjectsTable.$converter1);
   final VerificationMeta _currentCostsMeta =
       const VerificationMeta('currentCosts');
@@ -303,11 +383,48 @@ class $ProjectsTable extends Projects
       GeneratedColumn<String>('current_costs', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($ProjectsTable.$converter2);
+  final VerificationMeta _feesPaidMeta = const VerificationMeta('feesPaid');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, coin, scale, currentAmount, realizedPnl, currentCosts];
+  late final GeneratedColumnWithTypeConverter<Decimal, String> feesPaid =
+      GeneratedColumn<String>('fees_paid', aliasedName, false,
+              type: DriftSqlType.string,
+              requiredDuringInsert: false,
+              defaultValue: const Constant('0.0'))
+          .withConverter<Decimal>($ProjectsTable.$converter3);
+  final VerificationMeta _fiatFeesPaidMeta =
+      const VerificationMeta('fiatFeesPaid');
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal, String> fiatFeesPaid =
+      GeneratedColumn<String>('fiat_fees_paid', aliasedName, false,
+              type: DriftSqlType.string,
+              requiredDuringInsert: false,
+              defaultValue: const Constant('0.0'))
+          .withConverter<Decimal>($ProjectsTable.$converter4);
+  final VerificationMeta _averageCostPerCoinMeta =
+      const VerificationMeta('averageCostPerCoin');
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal, String>
+      averageCostPerCoin = GeneratedColumn<String>(
+              'average_cost_per_coin', aliasedName, false,
+              type: DriftSqlType.string,
+              requiredDuringInsert: false,
+              defaultValue: const Constant('0.0'))
+          .withConverter<Decimal>($ProjectsTable.$converter5);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        coin,
+        scale,
+        currentAmount,
+        realizedPnl,
+        currentCosts,
+        feesPaid,
+        fiatFeesPaid,
+        averageCostPerCoin
+      ];
   @override
   String get aliasedName => _alias ?? 'projects';
   @override
@@ -341,6 +458,9 @@ class $ProjectsTable extends Projects
     context.handle(_currentAmountMeta, const VerificationResult.success());
     context.handle(_realizedPnlMeta, const VerificationResult.success());
     context.handle(_currentCostsMeta, const VerificationResult.success());
+    context.handle(_feesPaidMeta, const VerificationResult.success());
+    context.handle(_fiatFeesPaidMeta, const VerificationResult.success());
+    context.handle(_averageCostPerCoinMeta, const VerificationResult.success());
     return context;
   }
 
@@ -367,6 +487,15 @@ class $ProjectsTable extends Projects
       currentCosts: $ProjectsTable.$converter2.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}current_costs'])!),
+      feesPaid: $ProjectsTable.$converter3.fromSql(attachedDatabase
+          .options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}fees_paid'])!),
+      fiatFeesPaid: $ProjectsTable.$converter4.fromSql(
+          attachedDatabase.options.types.read(
+              DriftSqlType.string, data['${effectivePrefix}fiat_fees_paid'])!),
+      averageCostPerCoin: $ProjectsTable.$converter5.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.string,
+              data['${effectivePrefix}average_cost_per_coin'])!),
     );
   }
 
@@ -378,6 +507,9 @@ class $ProjectsTable extends Projects
   static TypeConverter<Decimal, String> $converter0 = decimalConverter;
   static TypeConverter<Decimal, String> $converter1 = decimalConverter;
   static TypeConverter<Decimal, String> $converter2 = decimalConverter;
+  static TypeConverter<Decimal, String> $converter3 = decimalConverter;
+  static TypeConverter<Decimal, String> $converter4 = decimalConverter;
+  static TypeConverter<Decimal, String> $converter5 = decimalConverter;
 }
 
 class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {
@@ -781,7 +913,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('amount', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter1);
   final VerificationMeta _amountToSellMeta =
       const VerificationMeta('amountToSell');
@@ -790,7 +922,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('amount_to_sell', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter2);
   final VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
@@ -798,7 +930,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('value', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter3);
   final VerificationMeta _proceedsMeta = const VerificationMeta('proceeds');
   @override
@@ -806,7 +938,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('proceeds', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter4);
   final VerificationMeta _costsMeta = const VerificationMeta('costs');
   @override
@@ -814,7 +946,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('costs', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter5);
   final VerificationMeta _feeMeta = const VerificationMeta('fee');
   @override
@@ -822,7 +954,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('fee', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter6);
   final VerificationMeta _fiatFeeMeta = const VerificationMeta('fiatFee');
   @override
@@ -830,7 +962,7 @@ class $TransactionsTable extends Transactions
       GeneratedColumn<String>('fiat_fee', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              defaultValue: const Constant("0.0"))
+              defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($TransactionsTable.$converter7);
   final VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
@@ -947,10 +1079,375 @@ class $TransactionsTable extends Transactions
   static TypeConverter<Decimal, String> $converter7 = decimalConverter;
 }
 
+class ProceedDTO extends DataClass implements Insertable<ProceedDTO> {
+  final int id;
+  final int project;
+  final int purchase;
+  final int sale;
+  final Decimal amountSold;
+  final Decimal costs;
+  final Decimal value;
+  const ProceedDTO(
+      {required this.id,
+      required this.project,
+      required this.purchase,
+      required this.sale,
+      required this.amountSold,
+      required this.costs,
+      required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['project'] = Variable<int>(project);
+    map['purchase'] = Variable<int>(purchase);
+    map['sale'] = Variable<int>(sale);
+    {
+      final converter = $ProceedsTable.$converter0;
+      map['amount_sold'] = Variable<String>(converter.toSql(amountSold));
+    }
+    {
+      final converter = $ProceedsTable.$converter1;
+      map['costs'] = Variable<String>(converter.toSql(costs));
+    }
+    {
+      final converter = $ProceedsTable.$converter2;
+      map['value'] = Variable<String>(converter.toSql(value));
+    }
+    return map;
+  }
+
+  ProceedsCompanion toCompanion(bool nullToAbsent) {
+    return ProceedsCompanion(
+      id: Value(id),
+      project: Value(project),
+      purchase: Value(purchase),
+      sale: Value(sale),
+      amountSold: Value(amountSold),
+      costs: Value(costs),
+      value: Value(value),
+    );
+  }
+
+  factory ProceedDTO.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProceedDTO(
+      id: serializer.fromJson<int>(json['id']),
+      project: serializer.fromJson<int>(json['project']),
+      purchase: serializer.fromJson<int>(json['purchase']),
+      sale: serializer.fromJson<int>(json['sale']),
+      amountSold: serializer.fromJson<Decimal>(json['amountSold']),
+      costs: serializer.fromJson<Decimal>(json['costs']),
+      value: serializer.fromJson<Decimal>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'project': serializer.toJson<int>(project),
+      'purchase': serializer.toJson<int>(purchase),
+      'sale': serializer.toJson<int>(sale),
+      'amountSold': serializer.toJson<Decimal>(amountSold),
+      'costs': serializer.toJson<Decimal>(costs),
+      'value': serializer.toJson<Decimal>(value),
+    };
+  }
+
+  ProceedDTO copyWith(
+          {int? id,
+          int? project,
+          int? purchase,
+          int? sale,
+          Decimal? amountSold,
+          Decimal? costs,
+          Decimal? value}) =>
+      ProceedDTO(
+        id: id ?? this.id,
+        project: project ?? this.project,
+        purchase: purchase ?? this.purchase,
+        sale: sale ?? this.sale,
+        amountSold: amountSold ?? this.amountSold,
+        costs: costs ?? this.costs,
+        value: value ?? this.value,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ProceedDTO(')
+          ..write('id: $id, ')
+          ..write('project: $project, ')
+          ..write('purchase: $purchase, ')
+          ..write('sale: $sale, ')
+          ..write('amountSold: $amountSold, ')
+          ..write('costs: $costs, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, project, purchase, sale, amountSold, costs, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProceedDTO &&
+          other.id == this.id &&
+          other.project == this.project &&
+          other.purchase == this.purchase &&
+          other.sale == this.sale &&
+          other.amountSold == this.amountSold &&
+          other.costs == this.costs &&
+          other.value == this.value);
+}
+
+class ProceedsCompanion extends UpdateCompanion<ProceedDTO> {
+  final Value<int> id;
+  final Value<int> project;
+  final Value<int> purchase;
+  final Value<int> sale;
+  final Value<Decimal> amountSold;
+  final Value<Decimal> costs;
+  final Value<Decimal> value;
+  const ProceedsCompanion({
+    this.id = const Value.absent(),
+    this.project = const Value.absent(),
+    this.purchase = const Value.absent(),
+    this.sale = const Value.absent(),
+    this.amountSold = const Value.absent(),
+    this.costs = const Value.absent(),
+    this.value = const Value.absent(),
+  });
+  ProceedsCompanion.insert({
+    this.id = const Value.absent(),
+    required int project,
+    required int purchase,
+    required int sale,
+    required Decimal amountSold,
+    required Decimal costs,
+    required Decimal value,
+  })  : project = Value(project),
+        purchase = Value(purchase),
+        sale = Value(sale),
+        amountSold = Value(amountSold),
+        costs = Value(costs),
+        value = Value(value);
+  static Insertable<ProceedDTO> custom({
+    Expression<int>? id,
+    Expression<int>? project,
+    Expression<int>? purchase,
+    Expression<int>? sale,
+    Expression<String>? amountSold,
+    Expression<String>? costs,
+    Expression<String>? value,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (project != null) 'project': project,
+      if (purchase != null) 'purchase': purchase,
+      if (sale != null) 'sale': sale,
+      if (amountSold != null) 'amount_sold': amountSold,
+      if (costs != null) 'costs': costs,
+      if (value != null) 'value': value,
+    });
+  }
+
+  ProceedsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? project,
+      Value<int>? purchase,
+      Value<int>? sale,
+      Value<Decimal>? amountSold,
+      Value<Decimal>? costs,
+      Value<Decimal>? value}) {
+    return ProceedsCompanion(
+      id: id ?? this.id,
+      project: project ?? this.project,
+      purchase: purchase ?? this.purchase,
+      sale: sale ?? this.sale,
+      amountSold: amountSold ?? this.amountSold,
+      costs: costs ?? this.costs,
+      value: value ?? this.value,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (project.present) {
+      map['project'] = Variable<int>(project.value);
+    }
+    if (purchase.present) {
+      map['purchase'] = Variable<int>(purchase.value);
+    }
+    if (sale.present) {
+      map['sale'] = Variable<int>(sale.value);
+    }
+    if (amountSold.present) {
+      final converter = $ProceedsTable.$converter0;
+      map['amount_sold'] = Variable<String>(converter.toSql(amountSold.value));
+    }
+    if (costs.present) {
+      final converter = $ProceedsTable.$converter1;
+      map['costs'] = Variable<String>(converter.toSql(costs.value));
+    }
+    if (value.present) {
+      final converter = $ProceedsTable.$converter2;
+      map['value'] = Variable<String>(converter.toSql(value.value));
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProceedsCompanion(')
+          ..write('id: $id, ')
+          ..write('project: $project, ')
+          ..write('purchase: $purchase, ')
+          ..write('sale: $sale, ')
+          ..write('amountSold: $amountSold, ')
+          ..write('costs: $costs, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProceedsTable extends Proceeds
+    with TableInfo<$ProceedsTable, ProceedDTO> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProceedsTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _projectMeta = const VerificationMeta('project');
+  @override
+  late final GeneratedColumn<int> project = GeneratedColumn<int>(
+      'project', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES "projects" ("id")');
+  final VerificationMeta _purchaseMeta = const VerificationMeta('purchase');
+  @override
+  late final GeneratedColumn<int> purchase = GeneratedColumn<int>(
+      'purchase', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES "transactions" ("id")');
+  final VerificationMeta _saleMeta = const VerificationMeta('sale');
+  @override
+  late final GeneratedColumn<int> sale = GeneratedColumn<int>(
+      'sale', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES "transactions" ("id")');
+  final VerificationMeta _amountSoldMeta = const VerificationMeta('amountSold');
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal, String> amountSold =
+      GeneratedColumn<String>('amount_sold', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<Decimal>($ProceedsTable.$converter0);
+  final VerificationMeta _costsMeta = const VerificationMeta('costs');
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal, String> costs =
+      GeneratedColumn<String>('costs', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<Decimal>($ProceedsTable.$converter1);
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal, String> value =
+      GeneratedColumn<String>('value', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<Decimal>($ProceedsTable.$converter2);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, project, purchase, sale, amountSold, costs, value];
+  @override
+  String get aliasedName => _alias ?? 'proceeds';
+  @override
+  String get actualTableName => 'proceeds';
+  @override
+  VerificationContext validateIntegrity(Insertable<ProceedDTO> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('project')) {
+      context.handle(_projectMeta,
+          project.isAcceptableOrUnknown(data['project']!, _projectMeta));
+    } else if (isInserting) {
+      context.missing(_projectMeta);
+    }
+    if (data.containsKey('purchase')) {
+      context.handle(_purchaseMeta,
+          purchase.isAcceptableOrUnknown(data['purchase']!, _purchaseMeta));
+    } else if (isInserting) {
+      context.missing(_purchaseMeta);
+    }
+    if (data.containsKey('sale')) {
+      context.handle(
+          _saleMeta, sale.isAcceptableOrUnknown(data['sale']!, _saleMeta));
+    } else if (isInserting) {
+      context.missing(_saleMeta);
+    }
+    context.handle(_amountSoldMeta, const VerificationResult.success());
+    context.handle(_costsMeta, const VerificationResult.success());
+    context.handle(_valueMeta, const VerificationResult.success());
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProceedDTO map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProceedDTO(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      project: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}project'])!,
+      purchase: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}purchase'])!,
+      sale: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}sale'])!,
+      amountSold: $ProceedsTable.$converter0.fromSql(attachedDatabase
+          .options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}amount_sold'])!),
+      costs: $ProceedsTable.$converter1.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}costs'])!),
+      value: $ProceedsTable.$converter2.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}value'])!),
+    );
+  }
+
+  @override
+  $ProceedsTable createAlias(String alias) {
+    return $ProceedsTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<Decimal, String> $converter0 = decimalConverter;
+  static TypeConverter<Decimal, String> $converter1 = decimalConverter;
+  static TypeConverter<Decimal, String> $converter2 = decimalConverter;
+}
+
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
+  late final $ProceedsTable proceeds = $ProceedsTable(this);
   late final ProjectsDao projectsDao = ProjectsDao(this as Database);
   late final TransactionsDao transactionsDao =
       TransactionsDao(this as Database);
@@ -958,5 +1455,6 @@ abstract class _$Database extends GeneratedDatabase {
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [projects, transactions];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [projects, transactions, proceeds];
 }

@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:portfolio_manager/domain/fifo/deposit.dart';
+import 'package:portfolio_manager/domain/fifo/proceed.dart';
 import 'package:portfolio_manager/domain/fifo/purchase.dart';
 import 'package:portfolio_manager/domain/fifo/fifo_report.dart';
 import 'package:portfolio_manager/domain/fifo/sale.dart';
@@ -15,6 +16,7 @@ typedef OnTradeProcessed = Function(TradeReport report);
 
 typedef OnSaleProcessed = Function(TradeReport sale);
 typedef OnPurchaseProcessed = Function(TradeReport purchase);
+typedef OnProceedCreated = Function(int purchaseID, int saleID, Proceed proceed);
 
 class Fifo {
   final String _symbol;
@@ -94,7 +96,8 @@ class Fifo {
   void processTransactions({
     OnTradeProcessed? onTradeProcessed,
     OnSaleProcessed? onSaleProcessed,
-    OnPurchaseProcessed? onPurchaseProcessed
+    OnPurchaseProcessed? onPurchaseProcessed,
+    OnProceedCreated? onProceedCreated
   }) {
     Purchase? lastProcessedPurchase;
     for (Transaction t in _transactions) {
@@ -105,7 +108,8 @@ class Fifo {
             throw NotEnoughHoldingsException(0, 'You cannot sell more then you have!');
           }
           lastProcessedPurchase = _purchases.last;
-          sale.processPurchase(lastProcessedPurchase);
+          Proceed proceed = sale.processPurchase(lastProcessedPurchase);
+          onProceedCreated?.call(lastProcessedPurchase.id, sale.id, proceed);
           if (lastProcessedPurchase.amountToSell == Decimal.zero) {
             Purchase p = _purchases.removeLast();
             TradeReport r = _generateTradeReport(p);

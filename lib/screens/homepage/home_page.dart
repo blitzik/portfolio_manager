@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:portfolio_manager/di.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/router/router.gr.dart';
@@ -18,7 +19,7 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<HomePageBloc>(
+    return BlocProvider(
       create: (context) => getIt<HomePageBloc>()..add(HomePageLoaded()),
       child: this,
     );
@@ -89,33 +90,40 @@ class _HomePageState extends State<HomePage> {
                 if (projects.isEmpty) {
                   return Column(
                     children: const [
+                      SizedBox(height: 75.0,),
                       Text("Your portfolio is empty"),
                     ],
                   );
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: Column(
                     children: [
+                      const SizedBox(height: 25.0,),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Current costs: '),
-                              MoneyUsd(state.currentCosts)
+                              Row(
+                                children: [
+                                  const Text('Total costs: '),
+                                  MoneyUsd(state.currentCosts)
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Text('Total realized P/L: ', style: TextStyle(fontWeight: FontWeight.bold),),
+                                  MoneyUsd(state.totalRealizedPnl, isColored: true,)
+                                ],
+                              ),
                             ],
-                          ),
-                          Row(
-                            children: [
-                              const Text('Total realized P/L: ', style: TextStyle(fontWeight: FontWeight.bold),),
-                              MoneyUsd(state.totalRealizedPnl, isColored: true,)
-                            ],
-                          ),
+                          )
                         ],
                       ),
-                      Text('maybe a pie chart or something here'),
+                      const SizedBox(height: 50.0,),
                       Expanded(
                         child: ListView.separated(
                           itemCount: projects.length,

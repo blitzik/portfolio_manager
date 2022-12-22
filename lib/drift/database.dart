@@ -34,12 +34,15 @@ LazyDatabase _openConnection() {
 @DataClassName('ProjectDTO')
 class Projects extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().customConstraint("UNIQUE NOT NULL")();
-  TextColumn get coin => text().customConstraint("UNIQUE NOT NULL")();
+  TextColumn get name => text().customConstraint('UNIQUE NOT NULL')();
+  TextColumn get coin => text().customConstraint('UNIQUE NOT NULL')();
   IntColumn get scale => integer()();
-  TextColumn get currentAmount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get currentCosts => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get currentAmount => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get realizedPnl => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get currentCosts => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get feesPaid => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get fiatFeesPaid => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get averageCostPerCoin => text().map(decimalConverter).withDefault(const Constant('0.0'))();
 }
 
 
@@ -49,20 +52,31 @@ class Transactions extends Table {
   DateTimeColumn get date => dateTime()();
   IntColumn get project => integer().references(Projects, #id)();
   IntColumn get type => intEnum<TransactionType>()();
-  TextColumn get amount => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get amountToSell => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get value => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get costs => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get fee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
-  TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant("0.0"))();
+  TextColumn get amount => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get amountToSell => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get value => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get proceeds => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get costs => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get fee => text().map(decimalConverter).withDefault(const Constant('0.0'))();
+  TextColumn get fiatFee => text().map(decimalConverter).withDefault(const Constant('0.0'))();
   TextColumn get note => text().nullable()();
+}
+
+@DataClassName('ProceedDTO')
+class Proceeds extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get project => integer().references(Projects, #id)();
+  IntColumn get purchase => integer().references(Transactions, #id)();
+  IntColumn get sale => integer().references(Transactions, #id)();
+  TextColumn get amountSold => text().map(decimalConverter)();
+  TextColumn get costs => text().map(decimalConverter)();
+  TextColumn get value => text().map(decimalConverter)();
 }
 
 bool isInDebugMode = false;
 
 @Singleton()
-@DriftDatabase(tables: [Projects, Transactions], daos: [ProjectsDao, TransactionsDao])
+@DriftDatabase(tables: [Projects, Transactions, Proceeds], daos: [ProjectsDao, TransactionsDao])
 class Database extends _$Database {
   Database() : super(_openConnection());
 
@@ -74,6 +88,7 @@ class Database extends _$Database {
       onCreate: (Migrator m) async{
         await m.createAll();
         await m.createIndex(Index(transactions.actualTableName, 'CREATE INDEX txs_project_date ON transactions(project, date)'));
+        await m.createIndex(Index(projects.actualTableName, 'CREATE INDEX txs_current_costs ON projects(current_costs)'));
       },
       beforeOpen: (details) async {
         await customStatement('PRAGMA foreign_keys = ON');

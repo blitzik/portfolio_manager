@@ -8,6 +8,9 @@ class Project {
   final Decimal amount;
   final Decimal currentCosts;
   final Decimal realizedPnl;
+  final Decimal feesPaid;
+  final Decimal fiatFeesPaid;
+  final Decimal averageCostPerCoin;
 
   Project({
     required this.name,
@@ -16,6 +19,9 @@ class Project {
     required this.amount,
     required this.currentCosts,
     required this.realizedPnl,
+    required this.feesPaid,
+    required this.fiatFeesPaid,
+    required this.averageCostPerCoin,
     this.id,
   });
 
@@ -25,16 +31,22 @@ class Project {
     int? scale,
     Decimal? amount,
     Decimal? currentCosts,
-    Decimal? realizedPnl
+    Decimal? realizedPnl,
+    Decimal? feesPaid,
+    Decimal? fiatFeesPaid,
+    Decimal? averageCostPerCoin
   }) {
     return Project(
+      id: id,
       name: name ?? this.name,
       coin: coin ?? this.coin,
       scale: scale ?? this.scale,
       amount: amount ?? this.amount,
       currentCosts: currentCosts ?? this.currentCosts,
       realizedPnl: realizedPnl ?? this.realizedPnl,
-      id: id
+      feesPaid: feesPaid ?? this.feesPaid,
+      fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
+      averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin
     );
   }
 }

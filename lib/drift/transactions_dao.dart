@@ -2,6 +2,8 @@ import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:portfolio_manager/domain/fifo/fifo.dart';
+import 'package:portfolio_manager/domain/fifo/proceed.dart' as f;
+import 'package:portfolio_manager/domain/proceed.dart' as d;
 import 'package:portfolio_manager/domain/fifo/trade_report.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/domain/transaction.dart';
@@ -10,7 +12,7 @@ import 'package:portfolio_manager/utils/result_object.dart';
 
 part 'transactions_dao.g.dart';
 
-@DriftAccessor(tables: [Projects, Transactions])
+@DriftAccessor(tables: [Projects, Transactions, Proceeds])
 class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoMixin {
   TransactionsDao(Database attachedDatabase) : super(attachedDatabase);
 
@@ -34,11 +36,21 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
             note: Value<String?>(tx.note),
         );
 
-        int id = await into(transactions).insertOnConflictUpdate(tcomp);
+        int id;
+        if (tx.id == null) {
+          id = await into(transactions).insert(tcomp);
+        } else {
+          id = tx.id!;
+          await (update(transactions)..where((tbl) => tbl.id.equals(id))).write(tcomp);
+        }
+
+        final proceedsQ = delete(proceeds);
+        proceedsQ.where((tbl) => tbl.project.equals(tx.project.id!));
+        await proceedsQ.go();
 
         await _processTransactions(tx.project.id!);
 
-        final q = select(transactions)..where((tbl) => tbl.id.equals(id == 0 ? tx.id! : id));
+        final q = select(transactions)..where((tbl) => tbl.id.equals(id));
         TransactionDTO savedTransaction = await q.getSingle();
 
         final pq = select(projects);
@@ -83,6 +95,10 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
 
     try {
       result = await transaction(() async{
+        final pq = delete(proceeds);
+        pq.where((tbl) => tbl.project.equals(tx.project.id!));
+        await pq.go();
+
         final dq = delete(transactions);
         dq.where((tbl) => tbl.id.equals(tx.id!));
         int affectedRows = await dq.go();
@@ -166,7 +182,20 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
                 where: (tbl) => tbl.id.equals(report.id)
               );
             }
-          }
+          },
+        onProceedCreated: (int purchaseID, int saleID, f.Proceed proceed) {
+          batch.insert(
+            proceeds,
+            ProceedsCompanion.insert(
+              project: projectId,
+              purchase: purchaseID,
+              sale: saleID,
+              amountSold: proceed.amount,
+              costs: proceed.costs,
+              value: proceed.saleValue
+            )
+          );
+        }
       );
       batch.update(
         projects,
@@ -220,6 +249,35 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
     return Future.value(result);
   }
 
+  Future<ResultObject<List<d.Proceed>>> findProceeds(Transaction tx) async{
+    ResultObject<List<d.Proceed>> result = ResultObject();
+    try {
+      final q = select(this.proceeds);
+      if (tx.type == TransactionType.buy) {
+        q.where((tbl) => tbl.purchase.equals(tx.id!));
+      } else if (tx.type == TransactionType.sell) {
+        q.where((tbl) => tbl.sale.equals(tx.id!));
+      } else {
+        // TODO
+      }
+
+      List<d.Proceed> proceeds = await q.map((row) {
+        return d.Proceed(
+          amountSold: row.amountSold,
+          costs: row.costs,
+          value: row.value
+        );
+      }).get();
+
+      result = ResultObject(proceeds);
+
+    } on SqliteException catch (e) {
+      result.addErrorMessage('An error occurred while loading proceeds of this transaction');
+    }
+
+    return Future.value(result);
+  }
+
   Project _mapProject(ProjectDTO pdto) {
     return Project(
       id: pdto.id,
@@ -229,6 +287,9 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
       amount: pdto.currentAmount,
       currentCosts: pdto.currentCosts,
       realizedPnl: pdto.realizedPnl,
+      feesPaid: pdto.feesPaid,
+      fiatFeesPaid: pdto.fiatFeesPaid,
+      averageCostPerCoin: pdto.averageCostPerCoin
     );
   }
 }

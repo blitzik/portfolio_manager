@@ -106,39 +106,69 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                       );
                     }
 
-                    return Row(
+                    return Column(
                       children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              const Text('Current holdings',
-                                  style: CustomTextStyles.rowHeader),
-                              Text(
-                                  '${state.project.amount} ${widget.project.coin}'),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Current holdings',
+                                      style: CustomTextStyles.rowHeader),
+                                  Text(
+                                      '${state.project.amount} ${widget.project.coin}'),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Current holdings cost',
+                                      style: CustomTextStyles.rowHeader),
+                                  MoneyUsd(state.project.currentCosts)
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Gross realized P/L',
+                                      style: CustomTextStyles.rowHeader),
+                                  MoneyUsd(
+                                    state.project.realizedPnl,
+                                    isColored: true,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
                         ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              const Text('Current holdings cost',
-                                  style: CustomTextStyles.rowHeader),
-                              MoneyUsd(state.project.currentCosts)
-                            ],
-                          ),
+                        Row(                        // TODO
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Fees paid',
+                                      style: CustomTextStyles.rowHeader),
+                                  Text(
+                                      '${state.project.amount} ${widget.project.coin}'),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Fiat fees paid',
+                                      style: CustomTextStyles.rowHeader),
+                                  MoneyUsd(state.project.currentCosts)
+                                ],
+                              ),
+                            ),
+                            const Expanded(
+                              child: SizedBox()
+                            )
+                          ],
                         ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              const Text('Gross realized P/L',
-                                  style: CustomTextStyles.rowHeader),
-                              MoneyUsd(
-                                state.project.realizedPnl,
-                                isColored: true,
-                              )
-                            ],
-                          ),
-                        )
                       ],
                     );
                   },

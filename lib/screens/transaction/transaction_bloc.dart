@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
+import 'package:portfolio_manager/domain/proceed.dart';
 import 'package:portfolio_manager/domain/project.dart';
 import 'package:portfolio_manager/domain/transaction.dart';
 import 'package:portfolio_manager/drift/database.dart';
@@ -29,6 +30,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   TransactionBloc(Project project, this._db) : super(TransactionInitial(project)) {
     on<TransactionSaved>(_onTransactionSaved);
+    on<TransactionLoaded>(_onTransactionLoaded);
+  }
+
+  void _onTransactionLoaded(TransactionLoaded event, Emitter<TransactionState> emit) async{
+    emit(TransactionLoadInProgress(state.project));
+    if (event.transaction == null) {
+      emit(TransactionLoadedSuccessfully(state.project, []));
+
+    } else {
+      ResultObject<List<Proceed>> loadingProceeds = await _db.transactionsDao.findProceeds(event.transaction!);
+      if (loadingProceeds.isSuccess) {
+        emit(TransactionLoadedSuccessfully(state.project, loadingProceeds.value ?? []));
+      }
+    }
   }
 
 
