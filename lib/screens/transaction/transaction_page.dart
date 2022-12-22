@@ -124,6 +124,7 @@ class _TransactionPageState extends State<TransactionPage> {
       listener: (context, state) {
         if (state is TransactionSavedSuccessfully) {
           widget.onTransactionSaved?.call(state.transaction);
+          AutoRouter.of(context).pop();
         }
         if (state is TransactionSaveFailure) {
           showDialog(

@@ -7,6 +7,7 @@ import 'package:portfolio_manager/router/router.gr.dart';
 import 'package:portfolio_manager/screens/homepage/home_page_bloc.dart';
 import 'package:portfolio_manager/screens/homepage/project_item.dart';
 import 'package:portfolio_manager/widgets/menu.dart';
+import 'package:portfolio_manager/widgets/money_usd.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
 class HomePage extends StatefulWidget implements AutoRouteWrapper {
@@ -74,10 +75,10 @@ class _HomePageState extends State<HomePage> {
                         Text(state.error),
                         const SizedBox(height: 15),
                         ElevatedButton(
-                            onPressed: () {
-                              BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
-                            },
-                            child: const Text("Try again")
+                          onPressed: () {
+                            BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
+                          },
+                          child: const Text("Try again")
                         )
                       ],
                     ),
@@ -93,36 +94,54 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
 
-                return Column(
-                  children: [
-                    Text("Total cost basis"),
-                    Text("P/L"),
-                    Text("maybe a pie chart or something here"),
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: projects.length,
-                        itemBuilder: (context, index) {
-                          final Project project = projects[index];
-                          return InkWell(
-                            child: ProjectItem(project),
-                            onTap: () {
-                              AutoRouter.of(context).push(
-                                ProjectDetailRoute(
-                                  project: project,
-                                  onProjectChanged: () {
-                                    BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
-                                  }
-                                )
-                              );
-                            },
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return const Divider(height: 3, color: Colors.black45,);
-                        },
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Text('Current costs: '),
+                              MoneyUsd(state.currentCosts)
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Text('Total realized P/L: ', style: TextStyle(fontWeight: FontWeight.bold),),
+                              MoneyUsd(state.totalRealizedPnl, isColored: true,)
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      Text('maybe a pie chart or something here'),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: projects.length,
+                          itemBuilder: (context, index) {
+                            final Project project = projects[index];
+                            return InkWell(
+                              child: ProjectItem(project),
+                              onTap: () {
+                                AutoRouter.of(context).push(
+                                  ProjectDetailRoute(
+                                    project: project,
+                                    onProjectChanged: (Project project) {
+                                      BlocProvider.of<HomePageBloc>(context).add(HomePageLoaded());
+                                    }
+                                  )
+                                );
+                              },
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return const Divider(height: 3, color: Colors.black45,);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

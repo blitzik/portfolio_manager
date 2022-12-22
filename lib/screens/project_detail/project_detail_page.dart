@@ -13,7 +13,7 @@ import 'package:portfolio_manager/widgets/menu.dart';
 import 'package:portfolio_manager/widgets/money_usd.dart';
 import 'package:portfolio_manager/widgets/title_bar/title_bar.dart';
 
-typedef OnProjectChanged = Function();
+typedef OnProjectChanged = Function(Project project);
 
 class ProjectDetailPage extends StatefulWidget implements AutoRouteWrapper {
   final Project project;
@@ -73,7 +73,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
               }
           );
         } else if (state is ProjectDetailTransactionDeletedSuccessfully) {
-          widget.onProjectChanged?.call();
+          widget.onProjectChanged?.call(state.project);
         }
       },
       child: Scaffold(
@@ -89,7 +89,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                     onTransactionSaved: (Transaction tx) {
                       _projectDetailBloc
                           .add(ProjectDetailTransactionsLoaded(tx.project));
-                      widget.onProjectChanged?.call();
+                      widget.onProjectChanged?.call(tx.project);
                     }));
               },
             )
@@ -190,7 +190,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                                               _projectDetailBloc.add(
                                                   ProjectDetailTransactionsLoaded(
                                                       tx.project));
-                                              widget.onProjectChanged?.call();
+                                              widget.onProjectChanged?.call(tx.project);
                                             }));
                                   },
                                 ),

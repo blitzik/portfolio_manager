@@ -13,6 +13,12 @@ class HomePageLoadFailure extends HomePageState {
 
 class HomePageLoadSuccess extends HomePageState {
   final List<Project> projects;
+  final Decimal currentCosts;
+  final Decimal totalRealizedPnl;
 
-  HomePageLoadSuccess(this.projects);
+  HomePageLoadSuccess({
+    required this.projects,
+    required this.currentCosts,
+    required this.totalRealizedPnl
+  });
 }

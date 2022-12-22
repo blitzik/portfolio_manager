@@ -5,8 +5,8 @@ abstract class HomePageEvent {}
 
 class HomePageLoaded extends HomePageEvent {}
 
-class HomePageProjectCreated extends HomePageEvent {
+/*class HomePageProjectUpdated extends HomePageEvent {
   final Project project;
 
-  HomePageProjectCreated(this.project);
-}
+  HomePageProjectUpdated(this.project);
+}*/

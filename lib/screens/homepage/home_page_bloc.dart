@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:decimal/decimal.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:money2/money2.dart';
@@ -17,17 +18,23 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   HomePageBloc(this._db) : super(HomePageLoadInProgress()) {
     on<HomePageLoaded>(_onHomePageLoaded);
-    on<HomePageProjectCreated>(_onHomePageProjectCreated);
+    //on<HomePageProjectCreated>(_onHomePageProjectCreated);
+    //on<HomePageProjectUpdated>(_onHomePageProjectUpdated);
   }
 
 
-  void _onHomePageProjectCreated(HomePageProjectCreated event, Emitter<HomePageState> emit) async{
+  /*void _onHomePageProjectCreated(HomePageProjectCreated event, Emitter<HomePageState> emit) async{
     if (state is! HomePageLoadSuccess) return;
 
     List<Project> projects = (state as HomePageLoadSuccess).projects.toList();
 
     emit(HomePageLoadSuccess(projects..add(event.project)..toList(growable: false)));
-  }
+  }*/
+
+
+  /*void _onHomePageProjectUpdated(HomePageProjectUpdated event, Emitter<HomePageState> emit) async{
+
+  }*/
 
 
   void _onHomePageLoaded(HomePageLoaded event, Emitter<HomePageState> emit) async{
@@ -40,6 +47,20 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       return;
     }
 
-    emit(HomePageLoadSuccess(loadingProjects.value!.toList(growable: false)));
+    List<Project> projects = loadingProjects.value ?? [];
+    Decimal totalCostBasis = Decimal.fromInt(0);
+    Decimal totalPNL = Decimal.fromInt(0);
+    for (Project p in projects) {
+      totalCostBasis += p.currentCosts;
+      totalPNL += p.realizedPnl;
+    }
+
+    emit(
+      HomePageLoadSuccess(
+        projects: projects.toList(growable: false),
+        currentCosts: totalCostBasis,
+        totalRealizedPnl: totalPNL
+      )
+    );
   }
 }
