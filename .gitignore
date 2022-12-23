@@ -9,6 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
+*.sqlite
 
 # IntelliJ related
 *.iml
@@ -31,7 +32,6 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-db.sqlite
 
 # Symbolication related
 app.*.symbols
