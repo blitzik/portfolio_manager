@@ -164,9 +164,15 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                                 ],
                               ),
                             ),
-                            const Expanded(
-                              child: SizedBox()
-                            )
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text('Average Price',
+                                      style: CustomTextStyles.rowHeader),
+                                  MoneyUsd(state.project.averageCostPerCoin)
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ],

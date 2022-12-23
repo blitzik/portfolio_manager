@@ -36,6 +36,11 @@ class Fifo {
   Decimal _currentCostBasis = d('0.0');
   Decimal get currentCostBasis => _currentCostBasis - _purchaseFiatFees;
 
+  Decimal get averageCoinPrice =>
+      _currentAmount == Decimal.zero ?
+                        Decimal.zero :
+                        (currentCostBasis / currentAmount).toDecimal(scaleOnInfinitePrecision: 20);
+
   Decimal _totalProceeds = d('0.0');
   Decimal get totalProceeds => _totalProceeds;
 

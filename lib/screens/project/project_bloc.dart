@@ -34,8 +34,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
           currentCosts: Decimal.zero,
           realizedPnl: Decimal.zero,
           feesPaid: Decimal.zero,
-          fiatFeesPaid: Decimal.zero,
-          averageCostPerCoin: Decimal.zero
+          fiatFeesPaid: Decimal.zero
         );
 
     //await Future.delayed(Duration(seconds: 5));

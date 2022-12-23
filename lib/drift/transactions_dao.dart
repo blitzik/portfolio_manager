@@ -289,7 +289,6 @@ class TransactionsDao extends DatabaseAccessor<Database> with _$TransactionsDaoM
       realizedPnl: pdto.realizedPnl,
       feesPaid: pdto.feesPaid,
       fiatFeesPaid: pdto.fiatFeesPaid,
-      averageCostPerCoin: pdto.averageCostPerCoin
     );
   }
 }

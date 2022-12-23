@@ -22,7 +22,6 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
       realizedPnl: Value<Decimal>(project.realizedPnl),
       feesPaid: Value<Decimal>(project.feesPaid),
       fiatFeesPaid: Value<Decimal>(project.fiatFeesPaid),
-      averageCostPerCoin: Value<Decimal>(project.averageCostPerCoin),
     );
 
     try {
@@ -114,8 +113,7 @@ class ProjectsDao extends DatabaseAccessor<Database> with _$ProjectsDaoMixin {
         currentCosts: dto.currentCosts,
         realizedPnl: dto.realizedPnl,
         feesPaid: dto.feesPaid,
-        fiatFeesPaid: dto.fiatFeesPaid,
-        averageCostPerCoin: dto.averageCostPerCoin
+        fiatFeesPaid: dto.fiatFeesPaid
     );
   }
 }

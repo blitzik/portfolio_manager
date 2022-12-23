@@ -17,7 +17,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
   final Decimal currentCosts;
   final Decimal feesPaid;
   final Decimal fiatFeesPaid;
-  final Decimal averageCostPerCoin;
   const ProjectDTO(
       {required this.id,
       required this.name,
@@ -27,8 +26,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       required this.realizedPnl,
       required this.currentCosts,
       required this.feesPaid,
-      required this.fiatFeesPaid,
-      required this.averageCostPerCoin});
+      required this.fiatFeesPaid});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -56,11 +54,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       final converter = $ProjectsTable.$converter4;
       map['fiat_fees_paid'] = Variable<String>(converter.toSql(fiatFeesPaid));
     }
-    {
-      final converter = $ProjectsTable.$converter5;
-      map['average_cost_per_coin'] =
-          Variable<String>(converter.toSql(averageCostPerCoin));
-    }
     return map;
   }
 
@@ -75,7 +68,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       currentCosts: Value(currentCosts),
       feesPaid: Value(feesPaid),
       fiatFeesPaid: Value(fiatFeesPaid),
-      averageCostPerCoin: Value(averageCostPerCoin),
     );
   }
 
@@ -92,8 +84,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       currentCosts: serializer.fromJson<Decimal>(json['currentCosts']),
       feesPaid: serializer.fromJson<Decimal>(json['feesPaid']),
       fiatFeesPaid: serializer.fromJson<Decimal>(json['fiatFeesPaid']),
-      averageCostPerCoin:
-          serializer.fromJson<Decimal>(json['averageCostPerCoin']),
     );
   }
   @override
@@ -109,7 +99,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
       'currentCosts': serializer.toJson<Decimal>(currentCosts),
       'feesPaid': serializer.toJson<Decimal>(feesPaid),
       'fiatFeesPaid': serializer.toJson<Decimal>(fiatFeesPaid),
-      'averageCostPerCoin': serializer.toJson<Decimal>(averageCostPerCoin),
     };
   }
 
@@ -122,8 +111,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           Decimal? realizedPnl,
           Decimal? currentCosts,
           Decimal? feesPaid,
-          Decimal? fiatFeesPaid,
-          Decimal? averageCostPerCoin}) =>
+          Decimal? fiatFeesPaid}) =>
       ProjectDTO(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -134,7 +122,6 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
         currentCosts: currentCosts ?? this.currentCosts,
         feesPaid: feesPaid ?? this.feesPaid,
         fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
-        averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin,
       );
   @override
   String toString() {
@@ -147,15 +134,14 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           ..write('realizedPnl: $realizedPnl, ')
           ..write('currentCosts: $currentCosts, ')
           ..write('feesPaid: $feesPaid, ')
-          ..write('fiatFeesPaid: $fiatFeesPaid, ')
-          ..write('averageCostPerCoin: $averageCostPerCoin')
+          ..write('fiatFeesPaid: $fiatFeesPaid')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, name, coin, scale, currentAmount,
-      realizedPnl, currentCosts, feesPaid, fiatFeesPaid, averageCostPerCoin);
+      realizedPnl, currentCosts, feesPaid, fiatFeesPaid);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -168,8 +154,7 @@ class ProjectDTO extends DataClass implements Insertable<ProjectDTO> {
           other.realizedPnl == this.realizedPnl &&
           other.currentCosts == this.currentCosts &&
           other.feesPaid == this.feesPaid &&
-          other.fiatFeesPaid == this.fiatFeesPaid &&
-          other.averageCostPerCoin == this.averageCostPerCoin);
+          other.fiatFeesPaid == this.fiatFeesPaid);
 }
 
 class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
@@ -182,7 +167,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
   final Value<Decimal> currentCosts;
   final Value<Decimal> feesPaid;
   final Value<Decimal> fiatFeesPaid;
-  final Value<Decimal> averageCostPerCoin;
   const ProjectsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -193,7 +177,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.currentCosts = const Value.absent(),
     this.feesPaid = const Value.absent(),
     this.fiatFeesPaid = const Value.absent(),
-    this.averageCostPerCoin = const Value.absent(),
   });
   ProjectsCompanion.insert({
     this.id = const Value.absent(),
@@ -205,7 +188,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     this.currentCosts = const Value.absent(),
     this.feesPaid = const Value.absent(),
     this.fiatFeesPaid = const Value.absent(),
-    this.averageCostPerCoin = const Value.absent(),
   })  : name = Value(name),
         coin = Value(coin),
         scale = Value(scale);
@@ -219,7 +201,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
     Expression<String>? currentCosts,
     Expression<String>? feesPaid,
     Expression<String>? fiatFeesPaid,
-    Expression<String>? averageCostPerCoin,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -231,8 +212,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       if (currentCosts != null) 'current_costs': currentCosts,
       if (feesPaid != null) 'fees_paid': feesPaid,
       if (fiatFeesPaid != null) 'fiat_fees_paid': fiatFeesPaid,
-      if (averageCostPerCoin != null)
-        'average_cost_per_coin': averageCostPerCoin,
     });
   }
 
@@ -245,8 +224,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       Value<Decimal>? realizedPnl,
       Value<Decimal>? currentCosts,
       Value<Decimal>? feesPaid,
-      Value<Decimal>? fiatFeesPaid,
-      Value<Decimal>? averageCostPerCoin}) {
+      Value<Decimal>? fiatFeesPaid}) {
     return ProjectsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -257,7 +235,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       currentCosts: currentCosts ?? this.currentCosts,
       feesPaid: feesPaid ?? this.feesPaid,
       fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
-      averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin,
     );
   }
 
@@ -300,11 +277,6 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
       map['fiat_fees_paid'] =
           Variable<String>(converter.toSql(fiatFeesPaid.value));
     }
-    if (averageCostPerCoin.present) {
-      final converter = $ProjectsTable.$converter5;
-      map['average_cost_per_coin'] =
-          Variable<String>(converter.toSql(averageCostPerCoin.value));
-    }
     return map;
   }
 
@@ -319,8 +291,7 @@ class ProjectsCompanion extends UpdateCompanion<ProjectDTO> {
           ..write('realizedPnl: $realizedPnl, ')
           ..write('currentCosts: $currentCosts, ')
           ..write('feesPaid: $feesPaid, ')
-          ..write('fiatFeesPaid: $fiatFeesPaid, ')
-          ..write('averageCostPerCoin: $averageCostPerCoin')
+          ..write('fiatFeesPaid: $fiatFeesPaid')
           ..write(')'))
         .toString();
   }
@@ -402,16 +373,6 @@ class $ProjectsTable extends Projects
               requiredDuringInsert: false,
               defaultValue: const Constant('0.0'))
           .withConverter<Decimal>($ProjectsTable.$converter4);
-  final VerificationMeta _averageCostPerCoinMeta =
-      const VerificationMeta('averageCostPerCoin');
-  @override
-  late final GeneratedColumnWithTypeConverter<Decimal, String>
-      averageCostPerCoin = GeneratedColumn<String>(
-              'average_cost_per_coin', aliasedName, false,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              defaultValue: const Constant('0.0'))
-          .withConverter<Decimal>($ProjectsTable.$converter5);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -422,8 +383,7 @@ class $ProjectsTable extends Projects
         realizedPnl,
         currentCosts,
         feesPaid,
-        fiatFeesPaid,
-        averageCostPerCoin
+        fiatFeesPaid
       ];
   @override
   String get aliasedName => _alias ?? 'projects';
@@ -460,7 +420,6 @@ class $ProjectsTable extends Projects
     context.handle(_currentCostsMeta, const VerificationResult.success());
     context.handle(_feesPaidMeta, const VerificationResult.success());
     context.handle(_fiatFeesPaidMeta, const VerificationResult.success());
-    context.handle(_averageCostPerCoinMeta, const VerificationResult.success());
     return context;
   }
 
@@ -493,9 +452,6 @@ class $ProjectsTable extends Projects
       fiatFeesPaid: $ProjectsTable.$converter4.fromSql(
           attachedDatabase.options.types.read(
               DriftSqlType.string, data['${effectivePrefix}fiat_fees_paid'])!),
-      averageCostPerCoin: $ProjectsTable.$converter5.fromSql(
-          attachedDatabase.options.types.read(DriftSqlType.string,
-              data['${effectivePrefix}average_cost_per_coin'])!),
     );
   }
 
@@ -509,7 +465,6 @@ class $ProjectsTable extends Projects
   static TypeConverter<Decimal, String> $converter2 = decimalConverter;
   static TypeConverter<Decimal, String> $converter3 = decimalConverter;
   static TypeConverter<Decimal, String> $converter4 = decimalConverter;
-  static TypeConverter<Decimal, String> $converter5 = decimalConverter;
 }
 
 class TransactionDTO extends DataClass implements Insertable<TransactionDTO> {

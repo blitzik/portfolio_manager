@@ -42,7 +42,6 @@ class Projects extends Table {
   TextColumn get currentCosts => text().map(decimalConverter).withDefault(const Constant('0.0'))();
   TextColumn get feesPaid => text().map(decimalConverter).withDefault(const Constant('0.0'))();
   TextColumn get fiatFeesPaid => text().map(decimalConverter).withDefault(const Constant('0.0'))();
-  TextColumn get averageCostPerCoin => text().map(decimalConverter).withDefault(const Constant('0.0'))();
 }
 
 
@@ -96,10 +95,13 @@ class Database extends _$Database {
           final m = Migrator(this);
           await m.deleteTable(transactions.actualTableName);
           await m.deleteTable(projects.actualTableName);
+          await m.deleteTable(proceeds.actualTableName);
 
           await m.createTable(projects);
           await m.createTable(transactions);
+          await m.createTable(proceeds);
           await m.createIndex(Index(transactions.actualTableName, 'CREATE INDEX txs_project_date ON transactions(project, date)'));
+          await m.createIndex(Index(projects.actualTableName, 'CREATE INDEX txs_current_costs ON projects(current_costs)'));
         }
       },
       onUpgrade: (Migrator m, oldVersion, newVersion) async{

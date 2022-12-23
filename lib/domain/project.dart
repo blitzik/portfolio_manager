@@ -10,7 +10,10 @@ class Project {
   final Decimal realizedPnl;
   final Decimal feesPaid;
   final Decimal fiatFeesPaid;
-  final Decimal averageCostPerCoin;
+  Decimal get averageCostPerCoin =>
+      amount == Decimal.zero ?
+      Decimal.zero :
+      (currentCosts / amount).toDecimal(scaleOnInfinitePrecision: 20);
 
   Project({
     required this.name,
@@ -21,7 +24,6 @@ class Project {
     required this.realizedPnl,
     required this.feesPaid,
     required this.fiatFeesPaid,
-    required this.averageCostPerCoin,
     this.id,
   });
 
@@ -33,8 +35,7 @@ class Project {
     Decimal? currentCosts,
     Decimal? realizedPnl,
     Decimal? feesPaid,
-    Decimal? fiatFeesPaid,
-    Decimal? averageCostPerCoin
+    Decimal? fiatFeesPaid
   }) {
     return Project(
       id: id,
@@ -45,8 +46,7 @@ class Project {
       currentCosts: currentCosts ?? this.currentCosts,
       realizedPnl: realizedPnl ?? this.realizedPnl,
       feesPaid: feesPaid ?? this.feesPaid,
-      fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid,
-      averageCostPerCoin: averageCostPerCoin ?? this.averageCostPerCoin
+      fiatFeesPaid: fiatFeesPaid ?? this.fiatFeesPaid
     );
   }
 }
